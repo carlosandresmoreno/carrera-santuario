@@ -8,21 +8,32 @@ import bootstrap from './src/main.server';
 
 // ── MongoDB Config ────────────────────────────────────────────────────────
 const MONGO_URI =
+  process.env['MONGO_URI'] ||
   'mongodb+srv://carlos:Carlos2021%40@bork-idok.rcks2y4.mongodb.net/?appName=bork-idok';
 const MONGO_DB_NAME = 'carrerasantuario';
 const MONGO_COLLECTION_NAME = 'inscripciones';
-const ADMIN_PASSWORD = 'Santuario2026@';
+const ADMIN_PASSWORD = process.env['ADMIN_PASSWORD'] || 'Santuario2026@';
 
 // ── Singleton MongoDB client ──────────────────────────────────────────────
 let client: MongoClient | null = null;
 
 async function getCollection() {
-  if (!client) {
-    client = new MongoClient(MONGO_URI);
-    await client.connect();
-    console.log('✅ MongoDB conectado');
+  try {
+    if (!client) {
+      console.log('⏳ Intentando conectar a MongoDB...');
+      client = new MongoClient(MONGO_URI, {
+        connectTimeoutMS: 8000,
+        serverSelectionTimeoutMS: 8000,
+      });
+      await client.connect();
+      console.log('✅ MongoDB conectado exitosamente');
+    }
+    return client.db(MONGO_DB_NAME).collection(MONGO_COLLECTION_NAME);
+  } catch (error) {
+    console.error('❌ Error de conexión MongoDB:', error);
+    client = null; // Reiniciar para el siguiente intento
+    throw error;
   }
-  return client.db(MONGO_DB_NAME).collection(MONGO_COLLECTION_NAME);
 }
 
 // ── Express app ───────────────────────────────────────────────────────────
@@ -41,6 +52,18 @@ export function app(): express.Express {
   server.use(express.json());
 
   // ── API Routes ────────────────────────────────────────────────────────
+
+  // Salud del servidor
+  server.get('/api/health', async (req, res) => {
+    try {
+      await getCollection();
+      res.json({ status: 'ok', db: 'connected', timestamp: new Date() });
+    } catch (err: any) {
+      res
+        .status(500)
+        .json({ status: 'error', db: 'disconnected', error: err.message });
+    }
+  });
 
   // POST /api/inscripciones — crear inscripción
   server.post('/api/inscripciones', async (req, res) => {
@@ -68,9 +91,12 @@ export function app(): express.Express {
         message: 'Inscripción exitosa',
         id: result.insertedId,
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creando inscripción:', err);
-      res.status(500).json({ error: 'Error al registrar la inscripción' });
+      res.status(500).json({
+        error: 'Error al registrar la inscripción',
+        details: err.message,
+      });
     }
   });
 
@@ -117,9 +143,12 @@ export function app(): express.Express {
       }
 
       res.status(400).json({ error: 'Falta parámetro: cedula o admin' });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error consultando inscripciones:', err);
-      res.status(500).json({ error: 'Error al consultar inscripciones' });
+      res.status(500).json({
+        error: 'Error al consultar inscripciones',
+        details: err.message,
+      });
     }
   });
 

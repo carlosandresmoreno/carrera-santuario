@@ -16,12 +16,12 @@
   from   = "/api/*"
   to     = "/.netlify/functions/server"
   status = 200
-  force  = true
 
 [[redirects]]
   from   = "/*"
-  to     = "/index.html"
+  to     = "/.netlify/functions/server"
   status = 200
+  conditions = {path = ["!/api/*", "!/assets/*", "!*.*"]}
 
 # ── Cache: Assets con hash → 1 año immutable ────────────────────────────────
 [[headers]]
