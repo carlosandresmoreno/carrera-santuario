@@ -169,9 +169,25 @@ import {
                               ✅ Aprobar
                             }
                           </button>
-                        } @else {
-                          <span class="done-text">—</span>
                         }
+
+                        <button
+                          class="delete-btn"
+                          (click)="
+                            eliminarInscripcion(
+                              ins._id,
+                              ins.primerNombre + ' ' + ins.primerApellido
+                            )
+                          "
+                          [disabled]="deletingId() === ins._id"
+                          title="Eliminar inscripción"
+                        >
+                          @if (deletingId() === ins._id) {
+                            ⏳
+                          } @else {
+                            🗑️
+                          }
+                        </button>
                       </td>
                     </tr>
                   }
@@ -508,9 +524,28 @@ import {
         white-space: nowrap;
         transition: all var(--transition-micro);
 
+        &:disabled {
+          opacity: 0.5;
+        }
+      }
+
+      .delete-btn {
+        padding: 0.375rem 0.5rem;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: var(--radius-md);
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all var(--transition-micro);
+        margin-left: 0.5rem;
+
         &:hover:not(:disabled) {
+          background: #ef4444;
+          color: white;
           transform: scale(1.05);
         }
+
         &:disabled {
           opacity: 0.5;
         }
@@ -536,6 +571,7 @@ export class AdminComponent {
   readonly loading = signal(false);
   readonly inscripciones = signal<InscripcionAdmin[]>([]);
   readonly approvingId = signal<string | null>(null);
+  readonly deletingId = signal<string | null>(null);
 
   login(): void {
     if (!this.password.trim()) return;
@@ -608,6 +644,29 @@ export class AdminComponent {
       },
       error: () => {
         this.approvingId.set(null);
+      },
+    });
+  }
+
+  eliminarInscripcion(id: string, nombre: string): void {
+    if (
+      !confirm(
+        `¿Estás seguro de que deseas eliminar la inscripción de ${nombre}? Esta acción no se puede deshacer.`,
+      )
+    ) {
+      return;
+    }
+
+    this.deletingId.set(id);
+    this.service.eliminar(id, this.password).subscribe({
+      next: () => {
+        this.deletingId.set(null);
+        // Update local state
+        this.inscripciones.update((list) => list.filter((i) => i._id !== id));
+      },
+      error: (err) => {
+        this.deletingId.set(null);
+        alert('Error al eliminar: ' + (err.error?.error || 'Intenta de nuevo'));
       },
     });
   }

@@ -51,11 +51,9 @@ export function app(): express.Express {
         numeroDocumento: req.body.numeroDocumento,
       });
       if (existing) {
-        res
-          .status(409)
-          .json({
-            error: 'Ya existe una inscripción con este número de documento',
-          });
+        res.status(409).json({
+          error: 'Ya existe una inscripción con este número de documento',
+        });
         return;
       }
 
@@ -149,6 +147,32 @@ export function app(): express.Express {
     } catch (err) {
       console.error('Error actualizando pago:', err);
       res.status(500).json({ error: 'Error al actualizar el pago' });
+    }
+  });
+
+  // DELETE /api/inscripciones/:id — eliminar inscripción (admin)
+  server.delete('/api/inscripciones/:id', async (req, res) => {
+    try {
+      const password = req.headers['x-admin-password'] as string;
+      if (password !== ADMIN_PASSWORD) {
+        res.status(401).json({ error: 'Contraseña incorrecta' });
+        return;
+      }
+
+      const col = await getCollection();
+      const result = await col.deleteOne({
+        _id: new ObjectId(req.params['id']),
+      });
+
+      if (result.deletedCount === 0) {
+        res.status(404).json({ error: 'Inscripción no encontrada' });
+        return;
+      }
+
+      res.json({ message: 'Inscripción eliminada' });
+    } catch (err) {
+      console.error('Error eliminando inscripción:', err);
+      res.status(500).json({ error: 'Error al eliminar la inscripción' });
     }
   });
 

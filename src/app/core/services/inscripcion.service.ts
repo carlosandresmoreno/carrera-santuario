@@ -74,4 +74,10 @@ export class InscripcionService {
       { headers: new HttpHeaders({ 'x-admin-password': password }) },
     );
   }
+
+  eliminar(id: string, password: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.baseUrl}/${id}`, {
+      headers: new HttpHeaders({ 'x-admin-password': password }),
+    });
+  }
 }
