@@ -65,6 +65,21 @@ export function app(): express.Express {
     }
   });
 
+  // Debug de rutas para Netlify
+  server.get('/api/debug', (req, res) => {
+    res.json({
+      url: req.url,
+      originalUrl: req.originalUrl,
+      path: req.path,
+      method: req.method,
+      headers: req.headers,
+      env: {
+        hasMongo: !!process.env['MONGO_URI'],
+        nodeVersion: process.version,
+      },
+    });
+  });
+
   // POST /api/inscripciones — crear inscripción
   server.post('/api/inscripciones', async (req, res) => {
     try {
@@ -203,6 +218,15 @@ export function app(): express.Express {
       console.error('Error eliminando inscripción:', err);
       res.status(500).json({ error: 'Error al eliminar la inscripción' });
     }
+  });
+
+  // Catch-all para rutas /api no encontradas
+  server.all('/api/*', (req, res) => {
+    res.status(404).json({
+      error: 'Ruta API no encontrada',
+      path: req.path,
+      method: req.method,
+    });
   });
 
   // ── Static files ──────────────────────────────────────────────────────

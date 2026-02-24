@@ -1,27 +1,16 @@
-# ── Netlify Config – Santuario Corre 2026 ────────────────────────────────────
-# Angular 17+ SSR con prerender estático
-
 [build]
-  command       = "npm run build"
-  publish       = "dist/carrera-santuario/browser"
+  command = "npm run build"
+  publish = "dist/carrera-santuario/browser"
 
 [[plugins]]
   package = "@netlify/angular-runtime"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS    = "--legacy-peer-deps"
+  NPM_FLAGS = "--legacy-peer-deps"
 
-[[redirects]]
-  from   = "/api/*"
-  to     = "/.netlify/functions/server"
-  status = 200
-
-[[redirects]]
-  from   = "/*"
-  to     = "/.netlify/functions/server"
-  status = 200
-  conditions = {path = ["!/api/*", "!/assets/*", "!*.*"]}
+# El plugin de Netlify maneja los redirects automáticamente para Angular SSR.
+# No agregues redirects manuales para /* o /api/* a menos que sea necesario.
 
 # ── Cache: Assets con hash → 1 año immutable ────────────────────────────────
 [[headers]]
