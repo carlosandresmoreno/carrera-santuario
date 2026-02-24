@@ -101,7 +101,6 @@ const WHATSAPP_NUMBER = '573107333078';
               <div class="stat-detail">Ya vivieron la experiencia</div>
             </div>
 
-
             <div class="stat-card glass-card accent-card">
               <div class="stat-number">2ª</div>
               <div class="stat-label">Edición 2026</div>
@@ -131,6 +130,7 @@ const WHATSAPP_NUMBER = '573107333078';
                   href="#inscripcion"
                   class="mini-cta-btn primary"
                   aria-label="Ir a inscripción"
+                  (click)="scrollTo($event, 'inscripcion')"
                 >
                   📋 Inscribirme
                 </a>
@@ -430,5 +430,12 @@ export class HistoriaComponent {
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     a.click();
+  }
+  scrollTo(event: Event, id: string): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

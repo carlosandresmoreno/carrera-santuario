@@ -200,3 +200,22 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: var(--shadow-hover) !important;
   }
 }
+
+// ── Registration dialog panel
+.registration-dialog-panel {
+  .mdc-dialog__container,
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-container,
+  .mat-mdc-dialog-surface {
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+}
+
+.cdk-overlay-pane.registration-dialog-panel {
+  max-width: 100vw !important;
+}

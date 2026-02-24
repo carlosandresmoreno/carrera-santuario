@@ -1,4 +1,10 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { SafeResourcePipe } from '../../core/pipes/safe-resource.pipe';
 
 const INSTAGRAM_HANDLE = 'santuariocorre5ky10k';
@@ -108,6 +114,7 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
                 href="#inscripcion"
                 class="insta-cta-btn"
                 aria-label="Ir a inscripción"
+                (click)="scrollTo($event, 'inscripcion')"
               >
                 Inscríbete y vive la experiencia →
               </a>
@@ -332,7 +339,16 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
   ],
 })
 export class SocialWallComponent {
+  private readonly platformId = inject(PLATFORM_ID);
   readonly instagramEmbed = INSTAGRAM_EMBED;
   readonly instagramProfile = INSTAGRAM_PROFILE;
   readonly instagramHandle = INSTAGRAM_HANDLE;
+
+  scrollTo(event: Event, id: string): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }

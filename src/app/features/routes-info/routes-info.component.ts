@@ -105,7 +105,10 @@ const WHATSAPP_NUMBER = '573107333078';
               <a
                 href="#inscripcion"
                 class="select-btn"
-                (click)="store.selectDistance(modality.id)"
+                (click)="
+                  scrollToSection($event, 'inscripcion');
+                  store.selectDistance(modality.id)
+                "
                 [attr.aria-label]="'Inscribirme en ' + modality.name"
               >
                 @if (modality.id === '5k') {
@@ -148,7 +151,10 @@ const WHATSAPP_NUMBER = '573107333078';
             <span>
               ¡Excelente elección!
               <strong>{{ store.selectedModality()?.name }}</strong> —
-              <a href="#inscripcion" aria-label="Ir a inscripción"
+              <a
+                href="#inscripcion"
+                aria-label="Ir a inscripción"
+                (click)="scrollToSection($event, 'inscripcion')"
                 >Completa tu inscripción ahora →</a
               >
             </span>
@@ -501,5 +507,12 @@ export class RoutesInfoComponent {
     a.target = '_blank';
     a.rel = 'noopener noreferrer';
     a.click();
+  }
+  scrollToSection(event: Event, id: string): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }

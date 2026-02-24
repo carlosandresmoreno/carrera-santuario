@@ -25,22 +25,32 @@ const WHATSAPP_NUMBER = '573107333078';
             href="#"
             class="nav-logo"
             aria-label="Santuario Corre 5K & 10K – Inicio"
+            (click)="$event.preventDefault()"
           >
             <span class="logo-text">Santuario <strong>Corre</strong></span>
           </a>
           <ul class="nav-links" role="list">
             <li>
-              <a href="#historia" aria-label="Nuestra historia"
+              <a
+                href="#historia"
+                aria-label="Nuestra historia"
+                (click)="scrollTo($event, 'historia')"
                 >Nuestra Historia</a
               >
             </li>
             <li>
-              <a href="#modalidades" aria-label="Ver modalidades de carrera"
+              <a
+                href="#modalidades"
+                aria-label="Ver modalidades de carrera"
+                (click)="scrollTo($event, 'modalidades')"
                 >Modalidades</a
               >
             </li>
             <li>
-              <a href="#instagram" aria-label="Ver galería de Instagram"
+              <a
+                href="#instagram"
+                aria-label="Ver galería de Instagram"
+                (click)="scrollTo($event, 'instagram')"
                 >Galería</a
               >
             </li>
@@ -49,7 +59,8 @@ const WHATSAPP_NUMBER = '573107333078';
                 href="#inscripcion"
                 class="nav-cta"
                 aria-label="Inscribirse a la carrera"
-                >🔥 ¡Inscríbete Ya!</a
+                (click)="scrollTo($event, 'inscripcion')"
+                >¡Inscríbete!</a
               >
             </li>
           </ul>

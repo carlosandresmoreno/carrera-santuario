@@ -6,11 +6,11 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog } from '@angular/material/dialog';
 import { RaceStore, PRICE_STAGES } from '../../store/race.store';
+import { RegistrationModalComponent } from '../registration-modal/registration-modal.component';
 
 const WHATSAPP_NUMBER = '573107333078';
-const FORM_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSeeo5UXa64vaFIqhxt0NFxYf-jCCTHa7I4c08sbFw8zFTJFyw/viewform?usp=header';
 
 @Component({
   selector: 'app-registration',
@@ -91,22 +91,18 @@ const FORM_URL =
 
           <!-- Dual CTA Buttons — side by side -->
           <div class="dual-cta">
-            <!-- Primary CTA: Google Forms -->
-            <a
-              [href]="formUrl"
-              target="_blank"
-              rel="noopener noreferrer"
+            <!-- Primary CTA: Open Modal -->
+            <button
               class="btn-form"
+              (click)="openFormModal()"
               [attr.aria-label]="
                 store.hasSelection()
-                  ? 'Inscribirme en ' +
-                    store.selectedModality()?.name +
-                    ' – Formulario oficial'
-                  : 'Ir al formulario de inscripción oficial'
+                  ? 'Inscribirme en ' + store.selectedModality()?.name
+                  : 'Abrir formulario de inscripción'
               "
             >
               📋 Inscribirme Ahora — Es rápido
-            </a>
+            </button>
 
             <!-- WhatsApp CTA — equally prominent -->
             <button
@@ -633,8 +629,8 @@ const FORM_URL =
 export class RegistrationComponent {
   protected store = inject(RaceStore);
   private platformId = inject(PLATFORM_ID);
+  private dialog = inject(MatDialog);
 
-  readonly formUrl = FORM_URL;
   readonly allStages = () => PRICE_STAGES;
   readonly currentStage = () => this.store.currentStage();
 
@@ -654,6 +650,17 @@ export class RegistrationComponent {
     const stage = this.store.currentStage();
     const price = id === '5k' ? stage.price5k : stage.price10k;
     return '$' + price.toLocaleString('es-CO') + ' COP';
+  }
+
+  openFormModal(): void {
+    this.dialog.open(RegistrationModalComponent, {
+      data: { distancia: this.store.selectedDistance() || '5k' },
+      panelClass: 'registration-dialog-panel',
+      maxWidth: '100vw',
+      maxHeight: '100vh',
+      width: '100%',
+      height: '100%',
+    });
   }
 
   openWhatsApp(): void {
