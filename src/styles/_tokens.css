@@ -1,6 +1,7 @@
 /* =====================================================
    Design Tokens – Santuario Corre 2026
    Primary: Sky-Blue / Indigo  |  Accent: Warm Orange
+   8px Spacing System · Premium Glassmorphism
    ===================================================== */
 
 :root {
@@ -24,6 +25,11 @@
   --color-text-primary:   #f0f6ff;
   --color-text-secondary: #94b8e0;
   --color-text-muted:     #5b7ea8;
+
+  /* ── Glassmorphism ── */
+  --glass-bg:     rgba(26, 37, 64, 0.55);
+  --glass-blur:   16px;
+  --glass-border: rgba(255, 255, 255, 0.08);
 
   /* ── Gradients ── */
   --gradient-hero: linear-gradient(
@@ -56,29 +62,36 @@
   --line-height-tight:  1.1;
   --line-height-normal: 1.6;
 
-  /* ── Spacing ── */
+  /* ── 8px Spacing System ── */
+  --space-xs:      0.25rem;  /*  4px */
+  --space-sm:      0.5rem;   /*  8px */
+  --space-md:      1rem;     /* 16px */
+  --space-lg:      1.5rem;   /* 24px */
+  --space-xl:      2rem;     /* 32px */
+  --space-2xl:     3rem;     /* 48px */
+  --space-3xl:     4rem;     /* 64px */
   --space-section: clamp(4rem, 8vw, 8rem);
-  --space-card: 1.5rem;
-  --space-sm:   0.5rem;
-  --space-md:   1rem;
-  --space-lg:   2rem;
-  --space-xl:   4rem;
+  --space-card:    1.5rem;
 
-  /* ── Borders & Radius ── */
-  --radius-sm:   0.5rem;
-  --radius-md:   1rem;
-  --radius-lg:   1.5rem;
-  --radius-xl:   2rem;
+  /* ── Borders & Radius (16-24px range for cards) ── */
+  --radius-sm:   0.5rem;    /*  8px */
+  --radius-md:   1rem;      /* 16px */
+  --radius-lg:   1.25rem;   /* 20px */
+  --radius-xl:   1.5rem;    /* 24px */
+  --radius-card: 1.25rem;   /* 20px – main card radius */
   --radius-full: 9999px;
 
   /* ── Shadows ── */
+  --shadow-soft:        0 4px 24px rgba(0, 0, 0, 0.25);
   --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.45);
   --shadow-hover:       0 16px 48px rgba(0, 0, 0, 0.65);
-  --shadow-glow-green:  0 0 40px rgba(37, 99, 235, 0.35);
+  --shadow-elevated:    0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-glow-blue:   0 0 40px rgba(37, 99, 235, 0.35);
   --shadow-glow-accent: 0 0 40px rgba(244, 162, 97, 0.35);
 
   /* ── Transitions ── */
   --transition-fast:   0.15s ease;
+  --transition-micro:  0.2s ease-out;
   --transition-normal: 0.3s ease;
   --transition-slow:   0.6s ease;
   --transition-spring: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);

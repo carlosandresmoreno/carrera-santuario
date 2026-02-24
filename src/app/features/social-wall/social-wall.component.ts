@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SafeResourcePipe } from '../../core/pipes/safe-resource.pipe';
 
 const INSTAGRAM_HANDLE = 'santuariocorre5ky10k';
@@ -8,6 +8,7 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
 @Component({
   selector: 'app-social-wall',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [SafeResourcePipe],
   template: `
     <section
@@ -88,21 +89,28 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
                       <span class="stat-number">350</span>
                       <span class="stat-label">Atletas 2025</span>
                     </div>
-                    <div class="stat-item" aria-label="50/50 equidad de género">
-                      <span class="stat-number">50/50</span>
-                      <span class="stat-label">Género</span>
-                    </div>
                     <div class="stat-item" aria-label="Segunda edición 2026">
                       <span class="stat-number">2ª</span>
                       <span class="stat-label">Edición</span>
                     </div>
                     <div class="stat-item" aria-label="Santuario, Risaralda">
-                      <span class="stat-number">🌿</span>
                       <span class="stat-label">Risaralda</span>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <!-- CTA Banner after Instagram -->
+            <div class="insta-cta-banner">
+              <p class="insta-cta-text">¿Ya te imaginas cruzando la meta? 🏁</p>
+              <a
+                href="#inscripcion"
+                class="insta-cta-btn"
+                aria-label="Ir a inscripción"
+              >
+                Inscríbete y vive la experiencia →
+              </a>
             </div>
           } @placeholder (minimum 300ms) {
             <!-- Skeleton loader -->
@@ -139,39 +147,6 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
           var(--color-bg-surface) 50%,
           var(--color-bg) 100%
         );
-      }
-
-      .section-header {
-        text-align: center;
-        margin-bottom: 3rem;
-      }
-
-      .section-badge {
-        display: inline-block;
-        background: rgba(244, 162, 97, 0.12);
-        border: 1px solid rgba(244, 162, 97, 0.25);
-        border-radius: var(--radius-full);
-        padding: 0.375rem 1.25rem;
-        font-size: 0.85rem;
-        color: var(--color-accent-light);
-        font-weight: 600;
-        margin-bottom: 1rem;
-        letter-spacing: 0.08em;
-      }
-
-      .section-title {
-        font-size: var(--font-size-h2);
-        font-weight: 900;
-        color: var(--color-text-primary);
-        margin: 0 0 1rem;
-      }
-
-      .section-subtitle {
-        font-size: 1.05rem;
-        color: var(--color-text-secondary);
-        max-width: 480px;
-        margin: 0 auto;
-        line-height: 1.7;
       }
 
       /* ── Instagram Layout ── */
@@ -283,6 +258,58 @@ const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.08em;
+      }
+
+      /* ── CTA Banner ── */
+      .insta-cta-banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-top: 2.5rem;
+        padding: 1.25rem 2rem;
+        background: linear-gradient(
+          135deg,
+          rgba(244, 162, 97, 0.1) 0%,
+          rgba(45, 106, 79, 0.1) 100%
+        );
+        border: 1px solid rgba(244, 162, 97, 0.2);
+        border-radius: var(--radius-lg);
+
+        @media (max-width: 640px) {
+          flex-direction: column;
+          text-align: center;
+          gap: 1rem;
+        }
+      }
+
+      .insta-cta-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0;
+      }
+
+      .insta-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--gradient-accent);
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        border-radius: var(--radius-full);
+        text-decoration: none;
+        white-space: nowrap;
+        transition:
+          transform var(--transition-micro),
+          box-shadow var(--transition-micro);
+
+        &:hover {
+          transform: scale(1.03);
+          box-shadow: 0 0 20px rgba(244, 162, 97, 0.4);
+        }
       }
 
       /* ── Skeleton ── */

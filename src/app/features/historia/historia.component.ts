@@ -1,8 +1,17 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+const WHATSAPP_NUMBER = '573107333078';
 
 @Component({
   selector: 'app-historia',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
       id="historia"
@@ -12,10 +21,12 @@ import { Component } from '@angular/core';
       <div class="section-container">
         <!-- Header -->
         <div class="section-header">
-          <div class="section-badge">🌿 Nuestra Historia</div>
+          <div class="section-badge">Nuestra Historia</div>
           <h2 id="historia-title" class="section-title">
-            De jóvenes voluntarios<br />
-            a <span class="text-gradient-primary">un evento de impacto</span>
+            Lo que empezó como un sueño<br />
+            <span class="text-gradient-primary"
+              >se convirtió en movimiento</span
+            >
           </h2>
         </div>
 
@@ -24,22 +35,28 @@ import { Component } from '@angular/core';
           <!-- Story text -->
           <div class="historia-text">
             <p class="historia-lead">
-              <strong>"Santuario Corre 5K"</strong> nació como una iniciativa de
-              jóvenes voluntarios del
-              <strong>Bosque Campista Tamaná</strong> para fomentar estilos de
-              vida saludables y potenciar el turismo en nuestro municipio.
+              Un grupo de jóvenes del
+              <strong>Bosque Campista Tamaná</strong> se atrevió a soñar en
+              grande: organizar una carrera atlética que uniera deporte,
+              naturaleza y comunidad en el corazón de Santuario.
             </p>
             <p class="historia-body">
-              En nuestra primera edición el
-              <strong>5 de octubre de 2025</strong>, logramos una participación
-              equitativa de <strong>350 atletas</strong>
-              (50.6% hombres y 49.4% mujeres), consolidándonos como un evento
-              inclusivo y de alto impacto social.
+              Y lo lograron. El <strong>5 de octubre de 2025</strong>,
+              <strong>350 atletas</strong> llegaron a la línea de salida —
+              <strong>50% hombres, 50% mujeres</strong> — convirtiendo a
+              Santuario Corre en un evento inclusivo que superó todas las
+              expectativas.
             </p>
             <p class="historia-body">
-              Este año evolucionamos. Mantenemos nuestro propósito de recaudar
-              fondos para el <strong>liderazgo juvenil</strong>, pero elevamos
-              el nivel deportivo con la nueva categoría de 10K competitiva.
+              ¿Los fondos recaudados? Se invirtieron en
+              <strong>liderazgo juvenil</strong> y programas comunitarios. Cada
+              inscripción es más que una carrera — es un aporte al futuro de
+              nuestra comunidad.
+            </p>
+            <p class="historia-cta-text">
+              Este año la historia se hace más grande. Nueva categoría 10K
+              competitiva, más atletas, más impacto.
+              <strong>¿Vas a ser parte?</strong>
             </p>
 
             <!-- Modalities description -->
@@ -47,10 +64,14 @@ import { Component } from '@angular/core';
               <div class="modality-desc glass-card">
                 <div class="md-icon">🏃</div>
                 <div>
-                  <h3>5K Recreativa</h3>
+                  <h3>
+                    5K Recreativa
+                    <span class="popular-badge">⭐ Más popular</span>
+                  </h3>
                   <p>
                     Ideal para disfrutar en familia, con amigos y vivir la
-                    cultura cafetera que caracteriza a nuestra región.
+                    cultura cafetera. Perfecta para quienes quieren dar sus
+                    primeros pasos en el atletismo.
                   </p>
                 </div>
               </div>
@@ -71,20 +92,15 @@ import { Component } from '@angular/core';
             </div>
           </div>
 
-          <!-- Stats column -->
+          <!-- Stats + Social Proof column -->
           <div class="historia-stats">
             <!-- Stat cards -->
             <div class="stat-card glass-card">
-              <div class="stat-number">350</div>
+              <div class="stat-number">350+</div>
               <div class="stat-label">Atletas en 2025</div>
-              <div class="stat-detail">Primera edición</div>
+              <div class="stat-detail">Ya vivieron la experiencia</div>
             </div>
 
-            <div class="stat-card glass-card">
-              <div class="stat-number">50/50</div>
-              <div class="stat-label">Equidad de género</div>
-              <div class="stat-detail">50.6% H · 49.4% M</div>
-            </div>
 
             <div class="stat-card glass-card accent-card">
               <div class="stat-number">2ª</div>
@@ -92,19 +108,40 @@ import { Component } from '@angular/core';
               <div class="stat-detail">¡Más grande que nunca!</div>
             </div>
 
-            <!-- Organizer info -->
-            <div class="organizer-card glass-card">
-              <div class="org-header">
-                <span class="org-icon">🏕️</span>
+            <!-- Testimonial / Social Proof -->
+            <div class="testimonial-card glass-card">
+              <div class="testimonial-quote">
+                "La mejor carrera en la que he participado. El paisaje es
+                increíble y la organización fue de primer nivel."
+              </div>
+              <div class="testimonial-author">
+                <span class="author-avatar">🏅</span>
                 <div>
-                  <h4>Organiza</h4>
-                  <p>Bosque Campista Tamaná</p>
+                  <span class="author-name">Participante 2025</span>
+                  <span class="author-role">5K Recreativa</span>
                 </div>
               </div>
-              <p class="org-mission">
-                Jóvenes voluntarios comprometidos con el bienestar, el turismo y
-                el desarrollo comunitario de Santuario, Risaralda.
-              </p>
+            </div>
+
+            <!-- Mini CTA Card -->
+            <div class="mini-cta glass-card accent-border">
+              <p class="mini-cta-text">¿Quieres ser de los primeros?</p>
+              <div class="mini-cta-actions">
+                <a
+                  href="#inscripcion"
+                  class="mini-cta-btn primary"
+                  aria-label="Ir a inscripción"
+                >
+                  📋 Inscribirme
+                </a>
+                <button
+                  class="mini-cta-btn whatsapp"
+                  (click)="openWhatsApp()"
+                  aria-label="Consultar por WhatsApp"
+                >
+                  💬 WhatsApp
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -138,32 +175,6 @@ import { Component } from '@angular/core';
         }
       }
 
-      .section-header {
-        text-align: center;
-        margin-bottom: 3.5rem;
-      }
-
-      .section-badge {
-        display: inline-block;
-        background: rgba(45, 106, 79, 0.12);
-        border: 1px solid rgba(45, 106, 79, 0.25);
-        border-radius: var(--radius-full);
-        padding: 0.375rem 1.25rem;
-        font-size: 0.85rem;
-        color: var(--color-primary-light);
-        font-weight: 600;
-        margin-bottom: 1rem;
-        letter-spacing: 0.08em;
-      }
-
-      .section-title {
-        font-size: var(--font-size-h2);
-        font-weight: 900;
-        color: var(--color-text-primary);
-        margin: 0;
-        line-height: var(--line-height-tight);
-      }
-
       /* ── Grid layout ── */
       .historia-grid {
         display: grid;
@@ -179,7 +190,7 @@ import { Component } from '@angular/core';
 
       /* ── Text side ── */
       .historia-lead {
-        font-size: 1.15rem;
+        font-size: 1.2rem;
         color: var(--color-text-primary);
         line-height: 1.8;
         margin: 0 0 1.25rem;
@@ -196,6 +207,19 @@ import { Component } from '@angular/core';
         strong {
           color: var(--color-text-primary);
           font-weight: 700;
+        }
+      }
+
+      .historia-cta-text {
+        font-size: 1.1rem;
+        color: var(--color-text-primary);
+        line-height: 1.8;
+        margin: 1.5rem 0 0;
+        font-weight: 500;
+        strong {
+          color: var(--color-accent);
+          font-weight: 800;
+          font-size: 1.2rem;
         }
       }
 
@@ -221,6 +245,7 @@ import { Component } from '@angular/core';
           display: flex;
           align-items: center;
           gap: 0.625rem;
+          flex-wrap: wrap;
         }
 
         p {
@@ -240,6 +265,15 @@ import { Component } from '@angular/core';
         font-size: 0.65rem;
         font-weight: 700;
         background: var(--gradient-accent);
+        color: white;
+        padding: 0.15rem 0.5rem;
+        border-radius: var(--radius-full);
+      }
+
+      .popular-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: var(--gradient-primary);
         color: white;
         padding: 0.15rem 0.5rem;
         border-radius: var(--radius-full);
@@ -281,45 +315,120 @@ import { Component } from '@angular/core';
         color: var(--color-accent);
       }
 
-      /* ── Organizer ── */
-      .organizer-card {
+      /* ── Testimonial ── */
+      .testimonial-card {
         padding: 1.5rem;
+        border-left: 3px solid var(--color-accent);
       }
 
-      .org-header {
+      .testimonial-quote {
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+        line-height: 1.7;
+        font-style: italic;
+        margin-bottom: 1rem;
+      }
+
+      .testimonial-author {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 0.875rem;
+        gap: 0.75rem;
       }
 
-      .org-icon {
-        font-size: 2rem;
+      .author-avatar {
+        font-size: 1.5rem;
       }
 
-      .org-header h4 {
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        margin: 0 0 0.125rem;
-      }
-
-      .org-header p {
-        font-size: 0.95rem;
+      .author-name {
+        display: block;
+        font-size: 0.85rem;
         font-weight: 700;
         color: var(--color-text-primary);
-        margin: 0;
       }
 
-      .org-mission {
+      .author-role {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+      }
+
+      /* ── Mini CTA Card ── */
+      .mini-cta {
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .accent-border {
+        border-color: var(--color-accent) !important;
+        border-width: 1px;
+      }
+
+      .mini-cta-text {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--color-accent);
+        margin: 0 0 1rem;
+      }
+
+      .mini-cta-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .mini-cta-btn {
+        flex: 1;
+        border: none;
+        padding: 0.625rem 1rem;
+        border-radius: var(--radius-full);
         font-size: 0.85rem;
-        color: var(--color-text-secondary);
-        line-height: 1.6;
-        margin: 0;
+        font-weight: 700;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        text-decoration: none;
+        text-align: center;
+        transition:
+          transform var(--transition-micro),
+          box-shadow var(--transition-micro);
+
+        &:hover {
+          transform: scale(1.03);
+        }
+
+        &.primary {
+          background: var(--gradient-accent);
+          color: white;
+          &:hover {
+            box-shadow: 0 0 20px rgba(244, 162, 97, 0.4);
+          }
+        }
+
+        &.whatsapp {
+          background: rgba(37, 211, 102, 0.15);
+          color: #25d366;
+          border: 1px solid rgba(37, 211, 102, 0.3);
+          &:hover {
+            background: rgba(37, 211, 102, 0.25);
+          }
+        }
       }
     `,
   ],
 })
-export class HistoriaComponent {}
+export class HistoriaComponent {
+  private readonly platformId = inject(PLATFORM_ID);
+
+  openWhatsApp(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const msg =
+      '¡Hola! Vi la historia de Santuario Corre y quiero inscribirme en la segunda edición 2026.\n' +
+      '¿Me pueden dar más información? ¡Gracias!';
+
+    const url = 'https://wa.me/573107333078?text=' + encodeURIComponent(msg);
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
+  }
+}

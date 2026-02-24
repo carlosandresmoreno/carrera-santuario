@@ -1,14 +1,22 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatIconModule } from '@angular/material/icon';
 import { RaceStore } from '../../store/race.store';
 
+const WHATSAPP_NUMBER = '573107333078';
+
 @Component({
   selector: 'app-routes-info',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     MatCardModule,
@@ -30,8 +38,18 @@ import { RaceStore } from '../../store/race.store';
             Elige tu <span class="text-gradient-accent">Distancia</span>
           </h2>
           <p class="section-subtitle">
-            Dos categorías diseñadas para corredores de todos los niveles.
-            Selecciona la que va con tu ritmo.
+            No importa si es tu primera carrera o tu reto número 50. Hay una
+            categoría perfecta para ti.
+          </p>
+        </div>
+
+        <!-- Urgency Banner -->
+        <div class="urgency-banner" role="alert">
+          <span class="urgency-icon">🔥</span>
+          <p class="urgency-text">
+            Etapa <strong>{{ store.currentStage().name }}</strong> —
+            <strong>El precio más bajo del año.</strong>
+            Sube el {{ getNextStageDate() }}.
           </p>
         </div>
 
@@ -45,6 +63,14 @@ import { RaceStore } from '../../store/race.store';
               role="article"
               [attr.aria-label]="'Modalidad ' + modality.name"
             >
+              <!-- Popularity Badge -->
+              @if (modality.id === '5k') {
+                <div class="popularity-badge">⭐ Más popular</div>
+              }
+              @if (modality.id === '10k') {
+                <div class="competitor-badge">🏆 Para competidores</div>
+              }
+
               <!-- Card Header -->
               <div class="card-header">
                 <div class="card-icon" [attr.aria-hidden]="true">
@@ -75,23 +101,44 @@ import { RaceStore } from '../../store/race.store';
                 }
               </ul>
 
-              <!-- CTA Button -->
-              <button
-                mat-flat-button
+              <!-- CTA Buttons -->
+              <a
+                href="#inscripcion"
                 class="select-btn"
-                [class.selected-btn]="store.selectedDistance() === modality.id"
                 (click)="store.selectDistance(modality.id)"
-                [attr.aria-label]="'Seleccionar modalidad ' + modality.name"
-                [attr.aria-pressed]="store.selectedDistance() === modality.id"
+                [attr.aria-label]="'Inscribirme en ' + modality.name"
               >
-                @if (store.selectedDistance() === modality.id) {
-                  ✅ Seleccionada
+                @if (modality.id === '5k') {
+                  🏃 ¡Me inscribo en 5K!
                 } @else {
-                  Seleccionar {{ modality.name }}
+                  🏆 ¡Quiero la 10K!
                 }
-              </button>
+              </a>
             </div>
           }
+        </div>
+
+        <!-- WhatsApp helper -->
+        <div class="whatsapp-helper">
+          <p>¿Tienes dudas sobre cuál elegir?</p>
+          <button
+            class="whatsapp-link"
+            (click)="openWhatsApp()"
+            aria-label="Consultar por WhatsApp cuál modalidad elegir"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+              />
+            </svg>
+            Escríbenos por WhatsApp →
+          </button>
         </div>
 
         <!-- Selection indicator -->
@@ -99,10 +146,10 @@ import { RaceStore } from '../../store/race.store';
           <div class="selection-message" role="status" aria-live="polite">
             <span>🎯</span>
             <span>
-              Modalidad seleccionada:
+              ¡Excelente elección!
               <strong>{{ store.selectedModality()?.name }}</strong> —
               <a href="#inscripcion" aria-label="Ir a inscripción"
-                >Completa tu inscripción →</a
+                >Completa tu inscripción ahora →</a
               >
             </span>
           </div>
@@ -132,38 +179,45 @@ import { RaceStore } from '../../store/race.store';
         }
       }
 
-      .section-header {
-        text-align: center;
-        margin-bottom: 4rem;
+      /* ── Urgency Banner ── */
+      .urgency-banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        max-width: 680px;
+        margin: 0 auto 3rem;
+        padding: 1rem 1.5rem;
+        background: rgba(244, 162, 97, 0.1);
+        border: 1px solid rgba(244, 162, 97, 0.3);
+        border-radius: var(--radius-lg);
+        animation: pulse-border 3s ease-in-out infinite;
       }
 
-      .section-badge {
-        display: inline-block;
-        background: rgba(45, 106, 79, 0.15);
-        border: 1px solid rgba(45, 106, 79, 0.3);
-        border-radius: var(--radius-full);
-        padding: 0.375rem 1.25rem;
-        font-size: 0.85rem;
-        color: var(--color-primary-light);
-        font-weight: 600;
-        margin-bottom: 1rem;
-        letter-spacing: 0.08em;
+      @keyframes pulse-border {
+        0%,
+        100% {
+          border-color: rgba(244, 162, 97, 0.3);
+        }
+        50% {
+          border-color: rgba(244, 162, 97, 0.6);
+        }
       }
 
-      .section-title {
-        font-size: var(--font-size-h2);
-        font-weight: 900;
-        color: var(--color-text-primary);
-        margin: 0 0 1rem;
-        line-height: var(--line-height-tight);
+      .urgency-icon {
+        font-size: 1.5rem;
+        flex-shrink: 0;
       }
 
-      .section-subtitle {
-        font-size: 1.1rem;
+      .urgency-text {
+        font-size: 0.95rem;
         color: var(--color-text-secondary);
-        max-width: 520px;
-        margin: 0 auto;
-        line-height: 1.7;
+        margin: 0;
+
+        strong {
+          color: var(--color-accent);
+          font-weight: 700;
+        }
       }
 
       /* ── Cards ── */
@@ -215,6 +269,29 @@ import { RaceStore } from '../../store/race.store';
         &:hover {
           transform: translateY(-6px);
         }
+      }
+
+      /* ── Badges ── */
+      .popularity-badge,
+      .competitor-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 0.25rem 0.625rem;
+        border-radius: var(--radius-full);
+        letter-spacing: 0.03em;
+      }
+
+      .popularity-badge {
+        background: var(--gradient-primary);
+        color: white;
+      }
+
+      .competitor-badge {
+        background: var(--gradient-accent);
+        color: white;
       }
 
       .card-header {
@@ -292,27 +369,62 @@ import { RaceStore } from '../../store/race.store';
         margin-top: 1px;
       }
 
-      /* ── Button ── */
+      /* ── CTA Button ── */
       .select-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 100%;
-        height: 3rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.04em !important;
-        border-radius: var(--radius-full) !important;
-        background: var(--gradient-primary) !important;
-        color: white !important;
+        height: 3rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        border-radius: var(--radius-full);
+        background: var(--gradient-primary);
+        color: white;
+        text-decoration: none;
+        font-size: 0.95rem;
         transition:
           transform var(--transition-spring),
-          box-shadow var(--transition-normal) !important;
+          box-shadow var(--transition-normal);
 
         &:hover {
           transform: scale(1.02);
-          box-shadow: var(--shadow-glow-green) !important;
+          box-shadow: var(--shadow-glow-green);
         }
+      }
 
-        &.selected-btn {
-          background: var(--gradient-accent) !important;
-          box-shadow: var(--shadow-glow-accent) !important;
+      /* ── WhatsApp Helper ── */
+      .whatsapp-helper {
+        text-align: center;
+        margin-top: 2.5rem;
+
+        p {
+          font-size: 0.9rem;
+          color: var(--color-text-muted);
+          margin: 0 0 0.5rem;
+        }
+      }
+
+      .whatsapp-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: transparent;
+        border: none;
+        color: #25d366;
+        font-weight: 600;
+        font-size: 0.9rem;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-full);
+        transition:
+          background var(--transition-micro),
+          transform var(--transition-micro);
+
+        &:hover {
+          background: rgba(37, 211, 102, 0.1);
+          transform: translateY(-1px);
         }
       }
 
@@ -354,10 +466,40 @@ import { RaceStore } from '../../store/race.store';
 })
 export class RoutesInfoComponent {
   protected store = inject(RaceStore);
+  private readonly platformId = inject(PLATFORM_ID);
 
   getPrice(id: '5k' | '10k'): string {
     const stage = this.store.currentStage();
     const price = id === '5k' ? stage.price5k : stage.price10k;
     return '$' + price.toLocaleString('es-CO') + ' COP';
+  }
+
+  getNextStageDate(): string {
+    const idx = this.store
+      .allStages()
+      .findIndex((s) => s.name === this.store.currentStage().name);
+    if (idx < this.store.allStages().length - 1) {
+      return (
+        this.store.allStages()[idx + 1].dateRange.split('–')[0]?.trim() ||
+        'pronto'
+      );
+    }
+    return 'pronto';
+  }
+
+  openWhatsApp(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const msg =
+      '¡Hola! Estoy interesado en Santuario Corre 2026 pero tengo dudas sobre las modalidades.\n' +
+      '¿Me pueden ayudar a elegir entre la 5K y la 10K? ¡Gracias! 🏃';
+
+    const url =
+      'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
   }
 }

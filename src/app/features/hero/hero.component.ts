@@ -1,10 +1,20 @@
-import { Component, inject } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { NgOptimizedImage } from '@angular/common';
 import { CountdownComponent } from '../countdown/countdown.component';
+import { RaceStore } from '../../store/race.store';
+
+const WHATSAPP_NUMBER = '573107333078';
 
 @Component({
   selector: 'app-hero',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgOptimizedImage, CountdownComponent],
   template: `
     <header class="hero-wrapper" role="banner">
@@ -16,7 +26,6 @@ import { CountdownComponent } from '../countdown/countdown.component';
             class="nav-logo"
             aria-label="Santuario Corre 5K & 10K – Inicio"
           >
-            <span class="logo-icon">🌿</span>
             <span class="logo-text">Santuario <strong>Corre</strong></span>
           </a>
           <ul class="nav-links" role="list">
@@ -40,7 +49,7 @@ import { CountdownComponent } from '../countdown/countdown.component';
                 href="#inscripcion"
                 class="nav-cta"
                 aria-label="Inscribirse a la carrera"
-                >Inscríbete</a
+                >🔥 ¡Inscríbete Ya!</a
               >
             </li>
           </ul>
@@ -82,33 +91,46 @@ import { CountdownComponent } from '../countdown/countdown.component';
 
         <!-- Text Content -->
         <div class="hero-text section-container">
+          <!-- Social Proof Badge -->
+          <div
+            class="hero-proof animate-fade-in-up"
+            style="animation-delay:0.05s"
+            aria-label="350 atletas participaron en la primera edición"
+          >
+            <span class="proof-icon">🏅</span>
+            <span>350+ corredores en 2025</span>
+            <span class="proof-sep">·</span>
+          </div>
+
+          <!-- Event Badge -->
           <div
             class="hero-badge animate-fade-in-up"
-            style="animation-delay:0.1s"
+            style="animation-delay:0.15s"
           >
-            <span>🗓️ 18 de Octubre, 2026</span>
-            <span class="badge-sep">•</span>
-            <span>Bosque Campista Tamaná</span>
-            <span class="badge-sep">•</span>
-            <span>Santuario, Risaralda</span>
+            <span>🔥 Inscripciones abiertas</span>
+            <span class="badge-sep">—</span>
+            <span class="badge-stage"
+              >Etapa {{ store.currentStage().name }}</span
+            >
           </div>
 
           <h1
             id="hero-title"
             class="hero-title animate-fade-in-up"
-            style="animation-delay:0.25s"
+            style="animation-delay:0.3s"
           >
-            Santuario Corre 2026
-            <span class="hero-title-highlight">5K &amp; 10K Risaralda</span>
+            Corre por Santuario.
+            <span class="hero-title-highlight">Corre por Ti.</span>
           </h1>
 
           <p
             class="hero-subtitle animate-fade-in-up"
-            style="animation-delay:0.4s"
+            style="animation-delay:0.45s"
           >
-            Segunda Edición · Fomento del liderazgo juvenil y estilos de vida
-            saludables.<br />
-            ¡Vive la experiencia en el corazón del Paisaje Cultural Cafetero!
+            5K &amp; 10K en el corazón del Paisaje Cultural Cafetero.<br />
+            350 atletas ya vivieron la primera edición. Este
+            <strong>18 de octubre</strong>, la historia se hace más grande.
+            <strong>¿Vas a estar?</strong>
           </p>
 
           <!-- Countdown -->
@@ -128,16 +150,36 @@ import { CountdownComponent } from '../countdown/countdown.component';
               href="#inscripcion"
               class="btn-primary"
               aria-label="Inscribirse ahora a Santuario Corre 5K & 10K 2026"
+              (click)="scrollTo($event, 'inscripcion')"
             >
-              📋 Inscríbete Ahora
+              🏃 ¡Quiero mi cupo! — Desde {{ lowestPrice }}
             </a>
-            <a
-              href="#modalidades"
-              class="btn-secondary"
-              aria-label="Ver modalidades disponibles"
+            <button
+              class="btn-whatsapp-hero"
+              (click)="openWhatsApp()"
+              aria-label="Contactar por WhatsApp para inscripción o dudas"
             >
-              Ver Modalidades
-            </a>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                />
+              </svg>
+              Pregúntanos por WhatsApp
+            </button>
+          </div>
+
+          <!-- Location micro-info -->
+          <div
+            class="hero-location animate-fade-in-up"
+            style="animation-delay:0.85s"
+          >
+            📍 Santuario, Risaralda · Bosque Campista Tamaná
           </div>
         </div>
 
@@ -146,7 +188,7 @@ import { CountdownComponent } from '../countdown/countdown.component';
           <div class="scroll-mouse">
             <div class="scroll-dot"></div>
           </div>
-          <span>Explora</span>
+          <span>Descubre más</span>
         </div>
       </section>
     </header>
@@ -159,6 +201,11 @@ import { CountdownComponent } from '../countdown/countdown.component';
         display: flex;
         flex-direction: column;
         background: var(--color-bg);
+      }
+
+      .video-placeholder {
+        width: 100%;
+        height: 100%;
       }
 
       /* ── Navbar ── */
@@ -224,9 +271,11 @@ import { CountdownComponent } from '../countdown/countdown.component';
           padding: 0.5rem 1.25rem;
           border-radius: var(--radius-full);
           font-weight: 700;
+          font-size: 0.85rem;
           transition:
             transform var(--transition-spring),
             box-shadow var(--transition-normal) !important;
+          animation: pulse-glow-accent 2.5s ease-in-out infinite;
 
           &:hover {
             transform: scale(1.05);
@@ -240,6 +289,16 @@ import { CountdownComponent } from '../countdown/countdown.component';
           li:nth-child(2) {
             display: none;
           }
+        }
+      }
+
+      @keyframes pulse-glow-accent {
+        0%,
+        100% {
+          box-shadow: 0 0 12px rgba(244, 162, 97, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 28px rgba(244, 162, 97, 0.6);
         }
       }
 
@@ -298,6 +357,31 @@ import { CountdownComponent } from '../countdown/countdown.component';
         padding-bottom: 4rem;
       }
 
+      /* Social Proof */
+      .hero-proof {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(37, 211, 102, 0.12);
+        border: 1px solid rgba(37, 211, 102, 0.25);
+        border-radius: var(--radius-full);
+        padding: 0.3rem 1rem;
+        font-size: 0.8rem;
+        color: rgba(240, 255, 244, 0.9);
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.03em;
+      }
+
+      .proof-icon {
+        font-size: 1rem;
+      }
+
+      .proof-sep {
+        opacity: 0.4;
+      }
+
+      /* Event Badge */
       .hero-badge {
         display: inline-flex;
         align-items: center;
@@ -317,13 +401,19 @@ import { CountdownComponent } from '../countdown/countdown.component';
         opacity: 0.4;
       }
 
+      .badge-stage {
+        font-weight: 700;
+        color: var(--color-accent);
+      }
+
       .hero-title {
         font-size: var(--font-size-hero);
         font-weight: 900;
         line-height: var(--line-height-tight);
         color: white;
-        margin: 0 0 0.5rem;
+        margin: 0 0 var(--space-sm);
         text-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+        text-wrap: balance;
       }
 
       .hero-title-highlight {
@@ -338,8 +428,13 @@ import { CountdownComponent } from '../countdown/countdown.component';
         font-size: clamp(1rem, 2.5vw, 1.25rem);
         color: rgba(240, 255, 244, 0.8);
         margin: 1rem auto 2rem;
-        max-width: 600px;
+        max-width: 640px;
         line-height: 1.7;
+
+        strong {
+          color: white;
+          font-weight: 700;
+        }
       }
 
       .hero-countdown {
@@ -358,46 +453,58 @@ import { CountdownComponent } from '../countdown/countdown.component';
       .btn-primary {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--space-sm);
         background: var(--gradient-accent);
         color: white;
         font-weight: 700;
-        padding: 0.875rem 2.25rem;
+        padding: 1rem 2.5rem;
         border-radius: var(--radius-full);
         text-decoration: none;
-        font-size: 1.05rem;
+        font-size: 1.1rem;
         letter-spacing: 0.03em;
         box-shadow: var(--shadow-glow-accent);
         transition:
-          transform var(--transition-spring),
-          box-shadow var(--transition-normal);
+          transform var(--transition-micro),
+          box-shadow var(--transition-micro);
+        animation: pulse-glow-accent 3s ease-in-out infinite;
 
         &:hover {
-          transform: scale(1.05) translateY(-2px);
+          transform: scale(1.03) translateY(-2px);
           box-shadow: 0 0 50px rgba(244, 162, 97, 0.5);
         }
       }
 
-      .btn-secondary {
+      .btn-whatsapp-hero {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         background: transparent;
-        border: 2px solid rgba(240, 255, 244, 0.3);
-        color: rgba(240, 255, 244, 0.9);
+        border: 2px solid #25d366;
+        color: #25d366;
         font-weight: 600;
-        padding: 0.875rem 2.25rem;
+        padding: 1rem 2rem;
         border-radius: var(--radius-full);
-        text-decoration: none;
-        font-size: 1.05rem;
+        font-size: 1rem;
+        font-family: var(--font-sans);
+        cursor: pointer;
         transition:
-          border-color var(--transition-normal),
-          background var(--transition-normal);
+          background var(--transition-micro),
+          transform var(--transition-micro),
+          box-shadow var(--transition-micro);
 
         &:hover {
-          border-color: rgba(240, 255, 244, 0.6);
-          background: rgba(240, 255, 244, 0.08);
+          background: rgba(37, 211, 102, 0.15);
+          transform: scale(1.03) translateY(-2px);
+          box-shadow: 0 0 30px rgba(37, 211, 102, 0.3);
         }
+      }
+
+      /* Location */
+      .hero-location {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+        color: rgba(240, 255, 244, 0.5);
+        letter-spacing: 0.05em;
       }
 
       /* ── Scroll indicator ── */
@@ -449,4 +556,37 @@ import { CountdownComponent } from '../countdown/countdown.component';
     `,
   ],
 })
-export class HeroComponent {}
+export class HeroComponent {
+  protected readonly store = inject(RaceStore);
+  private readonly platformId = inject(PLATFORM_ID);
+
+  get lowestPrice(): string {
+    const stage = this.store.currentStage();
+    const min = Math.min(stage.price5k, stage.price10k);
+    return '$' + min.toLocaleString('es-CO');
+  }
+
+  scrollTo(event: Event, id: string): void {
+    event.preventDefault();
+    if (!isPlatformBrowser(this.platformId)) return;
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  openWhatsApp(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const msg =
+      '¡Hola! Me interesa inscribirme en *Santuario Corre 5K & 10K 2026*.\n' +
+      '¿Pueden darme información sobre las modalidades y precios? ¡Gracias! 🏃';
+
+    const url =
+      'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
+  }
+}

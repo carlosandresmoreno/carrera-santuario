@@ -1,18 +1,19 @@
 import {
   Component,
+  ChangeDetectionStrategy,
   inject,
-  OnDestroy,
-  OnInit,
+  DestroyRef,
+  afterNextRender,
+  computed,
   PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
 import { CountdownStore } from '../../store/countdown.store';
+import { RaceStore } from '../../store/race.store';
 
 @Component({
   selector: 'app-countdown',
   standalone: true,
-  imports: [CommonModule, MatCardModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="countdown-wrapper">
       @if (!store.expired()) {
@@ -25,20 +26,29 @@ import { CountdownStore } from '../../store/countdown.store';
               class="countdown-card glass-card"
               [attr.aria-label]="unit.value + ' ' + unit.label"
             >
-              <div class="countdown-number" [class.animate-flip]="unit.animate">
-                {{ unit.value | number: '2.0-0' }}
+              <div class="countdown-number">
+                {{ padNumber(unit.value) }}
               </div>
               <div class="countdown-label">{{ unit.label }}</div>
             </div>
           }
         </div>
-        <p class="countdown-tagline">⏱️ ¡El tiempo corre! Inscríbete hoy</p>
+        <p class="countdown-tagline">
+          ⏱️ Cada segundo cuenta —
+          <strong>¡asegura tu cupo antes de que suban los precios!</strong>
+        </p>
+        <p class="countdown-stage-deadline">
+          🔥 Etapa <strong>{{ raceStore.currentStage().name }}</strong> termina
+          el
+          <strong>{{
+            (raceStore.currentStage().dateRange.split('–')[1] || '').trim() ||
+              'pronto'
+          }}</strong>
+        </p>
       } @else {
         <div class="expired-message glass-card">
-          <span class="text-4xl">🏁</span>
-          <p class="text-xl font-bold text-white mt-2">
-            ¡La carrera está en curso!
-          </p>
+          <span class="expired-icon">🏁</span>
+          <p class="expired-text">¡La carrera está en curso!</p>
         </div>
       }
     </div>
@@ -47,13 +57,13 @@ import { CountdownStore } from '../../store/countdown.store';
     `
       .countdown-wrapper {
         text-align: center;
-        padding: 2rem 0;
+        padding: var(--space-xl) 0;
       }
 
       .countdown-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
+        gap: var(--space-md);
         max-width: 520px;
         margin: 0 auto;
 
@@ -64,12 +74,12 @@ import { CountdownStore } from '../../store/countdown.store';
       }
 
       .countdown-card {
-        padding: 1.25rem 0.75rem;
+        padding: var(--space-lg) var(--space-sm);
         text-align: center;
-        transition: transform 0.2s ease;
+        transition: transform var(--transition-micro);
 
         &:hover {
-          transform: translateY(-2px);
+          transform: translateY(-3px) scale(1.02);
         }
       }
 
@@ -79,8 +89,10 @@ import { CountdownStore } from '../../store/countdown.store';
         color: var(--color-accent);
         line-height: 1;
         font-variant-numeric: tabular-nums;
-        text-shadow: 0 0 20px rgba(244, 162, 97, 0.5);
-        transition: all 0.3s ease;
+        text-shadow: 0 0 24px rgba(244, 162, 97, 0.45);
+        transition:
+          transform var(--transition-micro),
+          text-shadow var(--transition-micro);
       }
 
       .countdown-label {
@@ -89,58 +101,77 @@ import { CountdownStore } from '../../store/countdown.store';
         color: var(--color-text-secondary);
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        margin-top: 0.5rem;
+        margin-top: var(--space-sm);
       }
 
       .countdown-tagline {
         color: var(--color-text-muted);
-        margin-top: 1.5rem;
+        margin-top: var(--space-lg);
         font-size: 0.9rem;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.03em;
+
+        strong {
+          color: rgba(240, 255, 244, 0.9);
+          font-weight: 700;
+        }
+      }
+
+      .countdown-stage-deadline {
+        color: var(--color-accent-light);
+        margin-top: var(--space-sm);
+        font-size: 0.82rem;
+        letter-spacing: 0.03em;
+        opacity: 0.85;
+
+        strong {
+          color: var(--color-accent);
+          font-weight: 700;
+        }
       }
 
       .expired-message {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 2rem;
+        padding: var(--space-xl);
         margin: 0 auto;
         max-width: 300px;
       }
 
-      @keyframes flip {
-        0% {
-          transform: scaleY(1);
-        }
-        50% {
-          transform: scaleY(0.9);
-          color: white;
-        }
-        100% {
-          transform: scaleY(1);
-        }
+      .expired-icon {
+        font-size: 2.5rem;
+      }
+
+      .expired-text {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin: var(--space-sm) 0 0;
       }
     `,
   ],
 })
-export class CountdownComponent implements OnInit, OnDestroy {
-  protected store = inject(CountdownStore);
-  private platformId = inject(PLATFORM_ID);
+export class CountdownComponent {
+  protected readonly store = inject(CountdownStore);
+  protected readonly raceStore = inject(RaceStore);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  countdownUnits() {
-    return [
-      { label: 'Días', value: this.store.days(), animate: false },
-      { label: 'Horas', value: this.store.hours(), animate: false },
-      { label: 'Minutos', value: this.store.minutes(), animate: false },
-      { label: 'Segundos', value: this.store.seconds(), animate: false },
-    ];
+  readonly countdownUnits = computed(() => [
+    { label: 'Días', value: this.store.days() },
+    { label: 'Horas', value: this.store.hours() },
+    { label: 'Minutos', value: this.store.minutes() },
+    { label: 'Segundos', value: this.store.seconds() },
+  ]);
+
+  constructor() {
+    afterNextRender(() => {
+      this.store.start(this.platformId);
+      this.destroyRef.onDestroy(() => this.store.stop());
+    });
   }
 
-  ngOnInit(): void {
-    this.store.start(this.platformId);
-  }
-
-  ngOnDestroy(): void {
-    this.store.stop();
+  padNumber(value: number): string {
+    return value.toString().padStart(2, '0');
   }
 }
