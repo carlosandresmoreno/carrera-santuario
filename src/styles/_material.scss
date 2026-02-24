@@ -1,0 +1,64 @@
+// Angular Material M3 – Carrera de Santuario Theme
+// Uses the Material 3 theming API with custom color seeds
+
+@use '@angular/material' as mat;
+
+// ── Define custom M3 theme ──────────────────────────────────────────────────
+$race-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$green-palette,
+    tertiary: mat.$orange-palette,
+  ),
+  typography: (
+    brand-family: 'Inter',
+    plain-family: 'Inter',
+    bold-weight: 700,
+    medium-weight: 500,
+    regular-weight: 400,
+  ),
+  density: (
+    scale: 0,
+  ),
+));
+
+// ── Apply theme to all Material components ──────────────────────────────────
+html {
+  @include mat.all-component-themes($race-theme);
+  @include mat.core();
+}
+
+// ── Override Material tokens with our design tokens ─────────────────────────
+.mat-mdc-card {
+  background: var(--color-bg-card) !important;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card) !important;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal) !important;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover) !important;
+    border-color: var(--color-primary-light);
+  }
+}
+
+.mat-mdc-flat-button.mat-primary {
+  background: var(--gradient-primary) !important;
+  color: white !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.mat-mdc-flat-button.mat-accent {
+  background: var(--gradient-accent) !important;
+  color: white !important;
+  font-weight: 700 !important;
+}
+
+// ── Mat Badge override ───────────────────────────────────────────────────────
+.mat-badge-content {
+  background: var(--color-accent) !important;
+  color: #0F1A14 !important;
+  font-weight: 700 !important;
+}
