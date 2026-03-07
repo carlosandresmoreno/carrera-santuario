@@ -13,13 +13,9 @@ main {
 .cta-interstitial {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    rgba(244, 162, 97, 0.08) 0%,
-    rgba(45, 106, 79, 0.08) 100%
-  );
-  border-top: 1px solid rgba(244, 162, 97, 0.15);
-  border-bottom: 1px solid rgba(45, 106, 79, 0.15);
+  background: rgba(37, 99, 235, 0.05);
+  border-top: 1px solid rgba(37, 99, 235, 0.1);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.1);
   padding: var(--space-xl) 0;
 }
 
@@ -38,13 +34,13 @@ main {
 
 .interstitial-text {
   font-size: 1.05rem;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   margin: 0;
   line-height: 1.6;
 
   strong {
-    color: var(--color-text-primary);
-    font-weight: 700;
+    color: var(--color-primary);
+    font-weight: 800;
   }
 }
 
@@ -53,21 +49,22 @@ main {
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.75rem;
-  background: var(--gradient-accent);
+  background: #2563eb;
   color: white;
   font-weight: 700;
   font-size: 0.95rem;
   border-radius: var(--radius-full);
   text-decoration: none;
   white-space: nowrap;
-  box-shadow: var(--shadow-glow-accent);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   transition:
     transform var(--transition-spring),
     box-shadow var(--transition-normal);
 
   &:hover {
     transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 0 40px rgba(244, 162, 97, 0.5);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    background: #1d4ed8;
   }
 }
 
@@ -75,11 +72,10 @@ main {
 .site-footer {
   position: relative;
   overflow: hidden;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border-top: 1px solid var(--glass-border);
+  background: white;
+  border-top: 1px solid var(--color-border);
   padding: var(--space-3xl) 0 var(--space-xl);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
 }
 
 .footer-glow {
@@ -91,7 +87,7 @@ main {
   height: 300px;
   background: radial-gradient(
     ellipse at center,
-    rgba(37, 99, 235, 0.12) 0%,
+    rgba(37, 99, 235, 0.08) 0%,
     transparent 70%
   );
   pointer-events: none;
@@ -115,7 +111,7 @@ main {
 
 .footer-tagline {
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   margin: var(--space-xs) 0 0;
 }
 
@@ -125,10 +121,10 @@ main {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--color-primary-light),
+    var(--color-primary),
     transparent
   );
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .footer-nav {
@@ -136,27 +132,27 @@ main {
   gap: var(--space-xl);
 
   a {
-    color: var(--color-text-secondary);
+    color: var(--color-text-primary);
     text-decoration: none;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
     transition:
       color var(--transition-micro),
       transform var(--transition-micro);
     display: inline-block;
 
     &:hover {
-      color: var(--color-accent);
+      color: var(--color-primary);
       transform: translateY(-1px);
     }
   }
 
   .footer-cta {
-    color: var(--color-accent);
-    font-weight: 700;
+    color: var(--color-primary);
+    font-weight: 800;
 
     &:hover {
-      color: var(--color-accent-light);
+      color: var(--color-primary-dark);
     }
   }
 }

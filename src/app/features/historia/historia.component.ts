@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-const WHATSAPP_NUMBER = '573107333078';
+const WHATSAPP_NUMBER = '573116227064';
 
 @Component({
   selector: 'app-historia',
@@ -424,7 +424,7 @@ export class HistoriaComponent {
       '¡Hola! Vi la historia de Santuario Corre y quiero inscribirme en la segunda edición 2026.\n' +
       '¿Me pueden dar más información? ¡Gracias!';
 
-    const url = 'https://wa.me/573107333078?text=' + encodeURIComponent(msg);
+    const url = 'https://wa.me/573116227064?text=' + encodeURIComponent(msg);
     const a = document.createElement('a');
     a.href = url;
     a.target = '_blank';

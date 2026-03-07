@@ -8,8 +8,9 @@ import { isPlatformBrowser } from '@angular/common';
 import { NgOptimizedImage } from '@angular/common';
 import { CountdownComponent } from '../countdown/countdown.component';
 import { RaceStore } from '../../store/race.store';
+import { UiService } from '../../core/services/ui.service';
 
-const WHATSAPP_NUMBER = '573107333078';
+const WHATSAPP_NUMBER = '573116227064';
 
 @Component({
   selector: 'app-hero',
@@ -32,14 +33,6 @@ const WHATSAPP_NUMBER = '573107333078';
           <ul class="nav-links" role="list">
             <li>
               <a
-                href="#historia"
-                aria-label="Nuestra historia"
-                (click)="scrollTo($event, 'historia')"
-                >Nuestra Historia</a
-              >
-            </li>
-            <li>
-              <a
                 href="#modalidades"
                 aria-label="Ver modalidades de carrera"
                 (click)="scrollTo($event, 'modalidades')"
@@ -48,10 +41,18 @@ const WHATSAPP_NUMBER = '573107333078';
             </li>
             <li>
               <a
-                href="#instagram"
-                aria-label="Ver galería de Instagram"
-                (click)="scrollTo($event, 'instagram')"
-                >Galería</a
+                href="#historia"
+                aria-label="Nuestra historia"
+                (click)="scrollTo($event, 'historia')"
+                >Nuestra Historia</a
+              >
+            </li>
+            <li>
+              <a
+                href="#consulta"
+                aria-label="Consultar estado de inscripción"
+                (click)="scrollTo($event, 'consulta')"
+                >Consultar Estado</a
               >
             </li>
             <li>
@@ -59,7 +60,7 @@ const WHATSAPP_NUMBER = '573107333078';
                 href="#inscripcion"
                 class="nav-cta"
                 aria-label="Inscribirse a la carrera"
-                (click)="scrollTo($event, 'inscripcion')"
+                (click)="openInscripcion($event)"
                 >¡Inscríbete!</a
               >
             </li>
@@ -161,7 +162,7 @@ const WHATSAPP_NUMBER = '573107333078';
               href="#inscripcion"
               class="btn-primary"
               aria-label="Inscribirse ahora a Santuario Corre 5K & 10K 2026"
-              (click)="scrollTo($event, 'inscripcion')"
+              (click)="openInscripcion($event)"
             >
               🏃 ¡Quiero mi cupo! — Desde {{ lowestPrice }}
             </a>
@@ -230,6 +231,9 @@ const WHATSAPP_NUMBER = '573107333078';
         z-index: var(--z-nav);
         border-radius: var(--radius-lg);
         padding: 0.875rem 1.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
       }
 
       .nav-inner {
@@ -246,13 +250,13 @@ const WHATSAPP_NUMBER = '573107333078';
         text-decoration: none;
         color: var(--color-text-primary);
         font-size: 1.1rem;
-        font-weight: 500;
+        font-weight: 700;
 
         .logo-icon {
           font-size: 1.5rem;
         }
         strong {
-          color: var(--color-accent);
+          color: var(--color-primary);
         }
       }
 
@@ -265,19 +269,19 @@ const WHATSAPP_NUMBER = '573107333078';
         padding: 0;
 
         a {
-          color: var(--color-text-secondary);
+          color: var(--color-text-primary);
           text-decoration: none;
           font-size: 0.9rem;
-          font-weight: 500;
+          font-weight: 600;
           transition: color var(--transition-fast);
 
           &:hover {
-            color: var(--color-text-primary);
+            color: var(--color-primary);
           }
         }
 
         .nav-cta {
-          background: var(--gradient-accent);
+          background: var(--gradient-primary);
           color: white !important;
           padding: 0.5rem 1.25rem;
           border-radius: var(--radius-full);
@@ -286,11 +290,11 @@ const WHATSAPP_NUMBER = '573107333078';
           transition:
             transform var(--transition-spring),
             box-shadow var(--transition-normal) !important;
-          animation: pulse-glow-accent 2.5s ease-in-out infinite;
+          animation: pulse-glow-green 2.5s ease-in-out infinite;
 
           &:hover {
             transform: scale(1.05);
-            box-shadow: var(--shadow-glow-accent);
+            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
           }
         }
 
@@ -489,24 +493,25 @@ const WHATSAPP_NUMBER = '573107333078';
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: transparent;
-        border: 2px solid #25d366;
-        color: #25d366;
-        font-weight: 600;
+        background: #25d366;
+        border: none;
+        color: white;
+        font-weight: 700;
         padding: 1rem 2rem;
         border-radius: var(--radius-full);
         font-size: 1rem;
         font-family: var(--font-sans);
         cursor: pointer;
+        box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
         transition:
           background var(--transition-micro),
           transform var(--transition-micro),
           box-shadow var(--transition-micro);
 
         &:hover {
-          background: rgba(37, 211, 102, 0.15);
+          background: #128c7e;
           transform: scale(1.03) translateY(-2px);
-          box-shadow: 0 0 30px rgba(37, 211, 102, 0.3);
+          box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
         }
       }
 
@@ -569,6 +574,7 @@ const WHATSAPP_NUMBER = '573107333078';
 })
 export class HeroComponent {
   protected readonly store = inject(RaceStore);
+  private readonly uiService = inject(UiService);
   private readonly platformId = inject(PLATFORM_ID);
 
   get lowestPrice(): string {
@@ -583,6 +589,11 @@ export class HeroComponent {
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  openInscripcion(event: Event): void {
+    event.preventDefault();
+    this.uiService.openRegistrationModal();
   }
 
   openWhatsApp(): void {

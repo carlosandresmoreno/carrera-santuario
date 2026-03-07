@@ -105,9 +105,21 @@ import {
                 <div class="pending-action">
                   <p>
                     📱 Realiza el pago y envía comprobante al WhatsApp:<br />
-                    <strong>310 733 3078</strong> o
                     <strong>311 622 7064</strong>
                   </p>
+                  <div class="payment-qr">
+                    <p class="qr-label">Puedes pagar escaneando este QR:</p>
+                    <div class="qr-container">
+                      <img
+                        src="/assets/paPagar.png"
+                        alt="QR de pago"
+                        class="qr-img"
+                      />
+                      <p class="qr-hint">
+                        Bancolombia / Nequi / Ahorro a la mano
+                      </p>
+                    </div>
+                  </div>
                 </div>
               }
             </div>
@@ -148,18 +160,19 @@ import {
       .search-input {
         flex: 1;
         padding: 0.875rem 1rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--color-border);
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(37, 99, 235, 0.2);
         border-radius: var(--radius-md);
         color: var(--color-text-primary);
         font-size: 1rem;
         font-family: var(--font-sans);
         transition: border-color var(--transition-fast);
+        box-shadow: var(--shadow-soft);
 
         &:focus {
           outline: none;
-          border-color: var(--color-primary-light);
-          box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+          border-color: var(--color-primary);
+          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
         &::placeholder {
@@ -169,7 +182,7 @@ import {
 
       .search-btn {
         padding: 0.875rem 1.5rem;
-        background: var(--gradient-primary);
+        background: #2563eb;
         color: white;
         font-weight: 700;
         border: none;
@@ -179,10 +192,12 @@ import {
         font-size: 0.95rem;
         white-space: nowrap;
         transition: all var(--transition-spring);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
 
         &:hover:not(:disabled) {
+          background: #1d4ed8;
           transform: scale(1.03);
-          box-shadow: var(--shadow-glow-green);
+          box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
         }
 
         &:disabled {
@@ -195,13 +210,14 @@ import {
       .result-card {
         margin-top: 1.5rem;
         padding: 1.5rem;
-        border: 1px solid var(--color-border);
+        border: 1px solid rgba(37, 99, 235, 0.15);
         border-radius: var(--radius-md);
-        background: rgba(255, 255, 255, 0.03);
+        background: white;
+        box-shadow: var(--shadow-card);
 
         &.pago-aprobado {
-          border-color: rgba(45, 106, 79, 0.4);
-          background: rgba(45, 106, 79, 0.08);
+          border-color: rgba(37, 99, 235, 0.3);
+          background: rgba(37, 99, 235, 0.03);
         }
       }
 
@@ -258,19 +274,56 @@ import {
       .pending-action {
         margin-top: 1.25rem;
         padding: 1rem;
-        background: rgba(244, 162, 97, 0.1);
-        border: 1px solid rgba(244, 162, 97, 0.25);
+        background: rgba(250, 204, 21, 0.05);
+        border: 1px solid rgba(250, 204, 21, 0.2);
         border-radius: var(--radius-md);
 
         p {
           font-size: 0.9rem;
           color: var(--color-text-secondary);
-          margin: 0;
+          margin: 0 0 1rem;
           line-height: 1.7;
           strong {
-            color: var(--color-primary-light);
+            color: var(--color-primary);
           }
         }
+      }
+
+      .payment-qr {
+        text-align: center;
+        border-top: 1px solid var(--color-border);
+        padding-top: 1rem;
+      }
+
+      .qr-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin-bottom: 0.75rem;
+      }
+
+      .qr-container {
+        background: white;
+        padding: 0.75rem;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .qr-img {
+        width: 160px;
+        height: 160px;
+        object-fit: contain;
+      }
+
+      .qr-hint {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+        margin: 0;
       }
 
       .alert-error {

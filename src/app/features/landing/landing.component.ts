@@ -4,6 +4,7 @@ import {
   inject,
   afterNextRender,
 } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { HeroComponent } from '../hero/hero.component';
 import { HistoriaComponent } from '../historia/historia.component';
 import { RoutesInfoComponent } from '../routes-info/routes-info.component';
@@ -12,6 +13,7 @@ import { RegistrationComponent } from '../registration/registration.component';
 import { StatusCheckComponent } from '../status-check/status-check.component';
 import { FloatingWhatsappComponent } from '../floating-whatsapp/floating-whatsapp.component';
 import { SeoService } from '../../core/services/seo.service';
+import { UiService } from '../../core/services/ui.service';
 
 @Component({
   selector: 'app-landing',
@@ -31,7 +33,7 @@ import { SeoService } from '../../core/services/seo.service';
       <app-hero />
 
       @defer (on idle) {
-        <app-historia />
+        <app-routes-info />
       } @placeholder {
         <div class="section-skeleton skeleton-shimmer" aria-hidden="true"></div>
       }
@@ -47,7 +49,7 @@ import { SeoService } from '../../core/services/seo.service';
           <a
             href="#inscripcion"
             class="interstitial-btn"
-            (click)="scrollTo($event, 'inscripcion')"
+            (click)="openInscripcion($event)"
             aria-label="Reservar cupo en la carrera"
           >
             ¡Reserva tu cupo ahora!
@@ -56,7 +58,7 @@ import { SeoService } from '../../core/services/seo.service';
       </div>
 
       @defer (on idle) {
-        <app-routes-info />
+        <app-historia />
       } @placeholder {
         <div class="section-skeleton skeleton-shimmer" aria-hidden="true"></div>
       }
@@ -97,19 +99,19 @@ import { SeoService } from '../../core/services/seo.service';
         <div class="footer-divider" aria-hidden="true"></div>
 
         <nav class="footer-nav" aria-label="Navegación del pie de página">
-          <a href="#historia" (click)="scrollTo($event, 'historia')"
-            >Nuestra Historia</a
-          >
           <a href="#modalidades" (click)="scrollTo($event, 'modalidades')"
             >Modalidades</a
           >
-          <a href="#instagram" (click)="scrollTo($event, 'instagram')"
-            >Galería</a
+          <a href="#historia" (click)="scrollTo($event, 'historia')"
+            >Nuestra Historia</a
+          >
+          <a href="#consulta" (click)="scrollTo($event, 'consulta')"
+            >Consultar Estado</a
           >
           <a
             href="#inscripcion"
             class="footer-cta"
-            (click)="scrollTo($event, 'inscripcion')"
+            (click)="openInscripcion($event)"
             >🔥 Inscríbete</a
           >
         </nav>
@@ -125,6 +127,8 @@ import { SeoService } from '../../core/services/seo.service';
 })
 export class LandingComponent {
   private readonly seo = inject(SeoService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly uiService = inject(UiService);
 
   constructor() {
     afterNextRender(() => {
@@ -146,6 +150,13 @@ export class LandingComponent {
 
       this.seo.setCanonical('/');
       this.seo.injectJsonLd(this.seo.buildRaceSchema());
+
+      // Deep linking for registration modal
+      this.route.queryParams.subscribe((params) => {
+        if (params['inscribete'] === 'true') {
+          this.uiService.openRegistrationModal();
+        }
+      });
     });
   }
 
@@ -154,5 +165,10 @@ export class LandingComponent {
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  openInscripcion(event: Event): void {
+    event.preventDefault();
+    this.uiService.openRegistrationModal();
   }
 }

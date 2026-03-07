@@ -1,6 +1,7 @@
 import { signalStore, withState, withMethods } from '@ngrx/signals';
 import { patchState } from '@ngrx/signals';
 import { isPlatformBrowser } from '@angular/common';
+import { inject, NgZone } from '@angular/core';
 
 interface CountdownState {
   days: number;
@@ -29,27 +30,34 @@ function calculateTimeLeft(): CountdownState {
   };
 }
 
-// Private interval reference (outside store state to avoid serialization issues)
 let _intervalId: ReturnType<typeof setInterval> | null = null;
 
 export const CountdownStore = signalStore(
   { providedIn: 'root' },
   withState<CountdownState>(calculateTimeLeft()),
-  withMethods((store) => ({
-    start(platformId: object): void {
-      if (!isPlatformBrowser(platformId)) return; // SSR-safe
-      if (_intervalId !== null) return; // Already running
+  withMethods((store) => {
+    const zone = inject(NgZone);
 
-      _intervalId = setInterval(() => {
-        patchState(store, calculateTimeLeft());
-      }, 1000);
-    },
+    return {
+      start(platformId: object): void {
+        if (!isPlatformBrowser(platformId)) return;
+        if (_intervalId !== null) return;
 
-    stop(): void {
-      if (_intervalId !== null) {
-        clearInterval(_intervalId);
-        _intervalId = null;
-      }
-    },
-  })),
+        // Run the interval directly. Since we are in the browser and want
+        // to trigger change detection, we use zone.run for the patchState.
+        _intervalId = setInterval(() => {
+          zone.run(() => {
+            patchState(store, calculateTimeLeft());
+          });
+        }, 1000);
+      },
+
+      stop(): void {
+        if (_intervalId !== null) {
+          clearInterval(_intervalId);
+          _intervalId = null;
+        }
+      },
+    };
+  }),
 );

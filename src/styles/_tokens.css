@@ -9,51 +9,51 @@
   --color-primary:       #2563eb;
   --color-primary-light: #60a5fa;
   --color-primary-dark:  #1d4ed8;
-  --color-accent:        #f4a261;
-  --color-accent-light:  #fcbf49;
-  --color-accent-dark:   #e76f51;
+  --color-accent:        #facc15;
+  --color-accent-light:  #fef08a;
+  --color-accent-dark:   #ca8a04;
 
-  /* ── Backgrounds (dark navy-blue) ── */
-  --color-bg:            #0c1220;
-  --color-bg-surface:    #111827;
-  --color-bg-card:       #1a2540;
-  --color-bg-card-hover: #1e2d4d;
-  --color-border:        rgba(37, 99, 235, 0.25);
-  --color-border-accent: rgba(244, 162, 97, 0.3);
+  /* ── Backgrounds (sky-blue) ── */
+  --color-bg:            #e0f2fe;
+  --color-bg-surface:    #f8fafc;
+  --color-bg-card:       #ffffff;
+  --color-bg-card-hover: #f1f5f9;
+  --color-border:        rgba(37, 99, 235, 0.15);
+  --color-border-accent: rgba(250, 204, 21, 0.3);
 
   /* ── Text ── */
-  --color-text-primary:   #f0f6ff;
-  --color-text-secondary: #94b8e0;
-  --color-text-muted:     #5b7ea8;
+  --color-text-primary:   #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-muted:     #64748b;
 
-  /* ── Glassmorphism ── */
-  --glass-bg:     rgba(26, 37, 64, 0.55);
-  --glass-blur:   16px;
-  --glass-border: rgba(255, 255, 255, 0.08);
+  /* ── Glassmorphism (adjusted for light) ── */
+  --glass-bg:     rgba(255, 255, 255, 0.7);
+  --glass-blur:   12px;
+  --glass-border: rgba(255, 255, 255, 0.5);
 
   /* ── Gradients ── */
   --gradient-hero: linear-gradient(
     135deg,
-    rgba(12, 18, 32, 0.88) 0%,
-    rgba(29, 78, 216, 0.55) 50%,
-    rgba(12, 18, 32, 0.92) 100%
+    rgba(224, 242, 254, 0.9) 0%,
+    rgba(37, 99, 235, 0.1) 50%,
+    rgba(224, 242, 254, 0.95) 100%
   );
-  --gradient-primary: linear-gradient(135deg, #1d4ed8 0%, #60a5fa 100%);
-  --gradient-accent:  linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
+  --gradient-primary: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  --gradient-accent:  linear-gradient(135deg, #facc15 0%, #ca8a04 100%);
   --gradient-card: linear-gradient(
     145deg,
-    rgba(26, 37, 64, 0.85) 0%,
-    rgba(17, 24, 39, 0.9) 100%
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(241, 245, 249, 0.95) 100%
   );
   --gradient-glow-blue: radial-gradient(
     circle at center,
-    rgba(37, 99, 235, 0.28) 0%,
+    rgba(37, 99, 235, 0.15) 0%,
     transparent 70%
   );
 
   /* ── Typography ── */
   --font-sans:    "Inter", "system-ui", sans-serif;
-  --font-display: "Inter", "system-ui", sans-serif;
+  --font-display: "Distillery Strong", "Bebas Neue", "Inter", "system-ui", sans-serif;
   --font-size-hero: clamp(2.5rem, 6vw, 5rem);
   --font-size-h2:   clamp(1.75rem, 4vw, 3rem);
   --font-size-h3:   clamp(1.25rem, 2.5vw, 1.75rem);
@@ -81,13 +81,13 @@
   --radius-card: 1.25rem;   /* 20px – main card radius */
   --radius-full: 9999px;
 
-  /* ── Shadows ── */
-  --shadow-soft:        0 4px 24px rgba(0, 0, 0, 0.25);
-  --shadow-card:        0 8px 32px rgba(0, 0, 0, 0.45);
-  --shadow-hover:       0 16px 48px rgba(0, 0, 0, 0.65);
-  --shadow-elevated:    0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --shadow-glow-blue:   0 0 40px rgba(37, 99, 235, 0.35);
-  --shadow-glow-accent: 0 0 40px rgba(244, 162, 97, 0.35);
+  /* ── Shadows (adjusted for light) ── */
+  --shadow-soft:        0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-card:        0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-hover:       0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-elevated:    0 24px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  --shadow-glow-blue:   0 0 40px rgba(37, 99, 235, 0.2);
+  --shadow-glow-accent: 0 0 40px rgba(250, 204, 21, 0.2);
 
   /* ── Transitions ── */
   --transition-fast:   0.15s ease;

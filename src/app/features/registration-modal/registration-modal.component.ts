@@ -358,12 +358,23 @@ interface ModalData {
                   >
                 </li>
                 <li>
-                  Envía el comprobante de pago al WhatsApp:<br />
-                  <strong>📱 310 733 3078</strong> o
+                  <strong>Envía el comprobante de pago</strong> al WhatsApp:<br />
                   <strong>📱 311 622 7064</strong>
                 </li>
                 <li>Recibirás confirmación de tu inscripción</li>
               </ol>
+
+              <div class="payment-qr">
+                <p class="qr-label">Puedes pagar escaneando este QR:</p>
+                <div class="qr-placeholder glass-card">
+                  <img
+                    src="/assets/paPagar.png"
+                    alt="QR de pago"
+                    class="qr-img"
+                  />
+                  <p class="qr-hint">Bancolombia / Nequi / Ahorro a la mano</p>
+                </div>
+              </div>
             </div>
 
             <p class="success-check">
@@ -647,8 +658,8 @@ interface ModalData {
 
       .success-steps {
         text-align: left;
-        background: rgba(45, 106, 79, 0.1);
-        border: 1px solid rgba(45, 106, 79, 0.25);
+        background: rgba(45, 106, 79, 0.05);
+        border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
         padding: 1.25rem 1.5rem;
         margin-bottom: 1.25rem;
@@ -661,7 +672,7 @@ interface ModalData {
         }
 
         ol {
-          margin: 0;
+          margin: 0 0 1.5rem;
           padding-left: 1.25rem;
           display: flex;
           flex-direction: column;
@@ -672,10 +683,49 @@ interface ModalData {
             color: var(--color-text-secondary);
             line-height: 1.6;
             strong {
-              color: var(--color-primary-light);
+              color: var(--color-primary);
             }
           }
         }
+      }
+
+      .payment-qr {
+        text-align: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--color-border);
+      }
+
+      .qr-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin-bottom: 0.75rem;
+      }
+
+      .qr-placeholder {
+        background: white;
+        padding: 1rem;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: var(--radius-md);
+      }
+
+      .qr-img {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+        background: #f1f5f9;
+        border-radius: var(--radius-sm);
+      }
+
+      .qr-hint {
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 600;
+        margin: 0;
       }
 
       .success-check {

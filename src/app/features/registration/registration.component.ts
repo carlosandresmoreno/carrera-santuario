@@ -6,11 +6,10 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
 import { RaceStore, PRICE_STAGES } from '../../store/race.store';
-import { RegistrationModalComponent } from '../registration-modal/registration-modal.component';
+import { UiService } from '../../core/services/ui.service';
 
-const WHATSAPP_NUMBER = '573107333078';
+const WHATSAPP_NUMBER = '573116227064';
 
 @Component({
   selector: 'app-registration',
@@ -303,8 +302,8 @@ const WHATSAPP_NUMBER = '573107333078';
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        background: rgba(45, 106, 79, 0.12);
-        border: 1px solid rgba(45, 106, 79, 0.3);
+        background: rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(37, 99, 235, 0.2);
         border-radius: var(--radius-md);
         padding: 0.875rem 1.25rem;
         margin-bottom: 1.25rem;
@@ -317,16 +316,16 @@ const WHATSAPP_NUMBER = '573107333078';
       .stage-info {
         flex: 1;
         font-size: 0.9rem;
-        color: var(--color-text-secondary);
+        color: var(--color-text-primary);
 
         strong {
-          color: var(--color-primary-light);
+          color: var(--color-primary);
           font-weight: 700;
           margin-right: 0.25rem;
         }
         em {
           font-style: normal;
-          color: var(--color-text-muted);
+          color: var(--color-text-secondary);
           font-size: 0.8rem;
         }
       }
@@ -353,7 +352,7 @@ const WHATSAPP_NUMBER = '573107333078';
       }
 
       .price-highlight {
-        color: var(--color-accent) !important;
+        color: var(--color-primary) !important;
         font-weight: 800;
       }
 
@@ -373,23 +372,24 @@ const WHATSAPP_NUMBER = '573107333078';
         padding: 0.875rem 1.5rem;
         border: 2px solid var(--color-border);
         border-radius: var(--radius-md);
-        background: transparent;
+        background: rgba(255, 255, 255, 0.5);
         color: var(--color-text-secondary);
         cursor: pointer;
         transition: all var(--transition-spring);
         font-family: var(--font-sans);
 
         &:hover {
-          border-color: var(--color-primary-light);
+          border-color: var(--color-primary);
           color: var(--color-text-primary);
           transform: translateY(-2px);
+          background: white;
         }
 
         &.active {
-          border-color: var(--color-accent);
-          background: rgba(244, 162, 97, 0.1);
-          color: var(--color-accent);
-          box-shadow: 0 0 20px rgba(244, 162, 97, 0.2);
+          border-color: var(--color-primary);
+          background: rgba(37, 99, 235, 0.1);
+          color: var(--color-primary);
+          box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
         }
       }
 
@@ -398,12 +398,12 @@ const WHATSAPP_NUMBER = '573107333078';
       }
       .chip-name {
         font-size: 0.9rem;
-        font-weight: 600;
+        font-weight: 700;
       }
       .chip-price {
         font-size: 0.75rem;
         font-weight: 700;
-        opacity: 0.85;
+        opacity: 0.9;
       }
 
       /* ── Dual CTA ── */
@@ -424,22 +424,25 @@ const WHATSAPP_NUMBER = '573107333078';
         justify-content: center;
         gap: 0.625rem;
         padding: 1rem 1.5rem;
-        background: var(--gradient-primary);
+        background: #2563eb;
         color: white;
         font-weight: 700;
         font-size: 1rem;
+        border: none;
         border-radius: var(--radius-full);
         text-decoration: none;
         letter-spacing: 0.03em;
-        box-shadow: var(--shadow-glow-green);
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
         transition:
           transform var(--transition-spring),
           box-shadow var(--transition-normal);
         text-align: center;
+        cursor: pointer;
 
         &:hover {
           transform: scale(1.03) translateY(-2px);
-          box-shadow: 0 0 50px rgba(45, 106, 79, 0.55);
+          box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+          background: #1d4ed8;
         }
       }
 
@@ -629,7 +632,7 @@ const WHATSAPP_NUMBER = '573107333078';
 export class RegistrationComponent {
   protected store = inject(RaceStore);
   private platformId = inject(PLATFORM_ID);
-  private dialog = inject(MatDialog);
+  private uiService = inject(UiService);
 
   readonly allStages = () => PRICE_STAGES;
   readonly currentStage = () => this.store.currentStage();
@@ -653,14 +656,7 @@ export class RegistrationComponent {
   }
 
   openFormModal(): void {
-    this.dialog.open(RegistrationModalComponent, {
-      data: { distancia: this.store.selectedDistance() || '5k' },
-      panelClass: 'registration-dialog-panel',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      width: '100%',
-      height: '100%',
-    });
+    this.uiService.openRegistrationModal();
   }
 
   openWhatsApp(): void {

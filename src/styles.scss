@@ -20,7 +20,7 @@ $primary-palette: mat.define-palette(mat.$blue-palette, 600, 400, 800);
 $accent-palette:  mat.define-palette(mat.$orange-palette, 400, 200, 600);
 $warn-palette:    mat.define-palette(mat.$red-palette);
 
-$race-theme: mat.define-dark-theme((
+$race-theme: mat.define-light-theme((
   color: (
     primary: $primary-palette,
     accent:  $accent-palette,
@@ -34,6 +34,7 @@ $race-theme: mat.define-dark-theme((
 
 html {
   @include mat.all-component-themes($race-theme);
+  background-color: var(--color-bg);
 }
 
 // ── Global Base Styles ───────────────────────────────────────────────────────
@@ -79,7 +80,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-padding {
-  padding-top: var(--space-section);
+  padding-top: calc(var(--space-section) + 2rem);
   padding-bottom: var(--space-section);
 }
 
@@ -134,6 +135,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .section-title {
+  font-family: var(--font-display);
   font-size: var(--font-size-h2);
   font-weight: 900;
   color: var(--color-text-primary);
