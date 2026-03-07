@@ -39,8 +39,8 @@ async function getCollection() {
 // ── Email Config ──────────────────────────────────────────────────────────
 const SMTP_CONFIG = {
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
+  port: 465, // SSL
+  secure: true,
   auth: {
     user: 'santuariocorre5k@gmail.com',
     pass: 'bggfmmpwvqjilyfg',
@@ -58,7 +58,12 @@ transporter.verify(function (error, success) {
   }
 });
 
-async function sendRegistrationReceivedEmail(inscripcion: any) {
+async function sendRegistrationReceivedEmail(
+  inscripcion: any,
+  browserDistFolder: string,
+) {
+  const qrPath = join(browserDistFolder, 'assets/paPagar.png');
+
   const mailOptions = {
     from: `"Santuario Corre" <${SMTP_CONFIG.auth.user}>`,
     to: inscripcion.correo,
@@ -77,7 +82,7 @@ async function sendRegistrationReceivedEmail(inscripcion: any) {
             <p style="margin: 10px 0 0;">Para completar tu inscripción, por favor realiza el pago por <strong>$${inscripcion.distancia === '10k' ? '120.000' : '85.000'} COP</strong> (según la etapa actual) escaneando el siguiente QR desde tu App bancaria (Nequi, Bancolombia, etc.):</p>
             
             <div style="text-align: center; margin: 20px 0;">
-              <img src="https://santuariocorre.com/assets/paPagar.png" alt="QR de Pago" style="width: 200px; height: 200px; border-radius: 8px;" />
+              <img src="cid:qr_image" alt="QR de Pago" style="width: 200px; height: 200px; border-radius: 8px;" />
             </div>
             
             <p style="margin: 0; font-size: 0.9rem;">Una vez realizado el pago, nuestro equipo lo verificará y recibirás otro correo de confirmación final.</p>
@@ -92,6 +97,13 @@ async function sendRegistrationReceivedEmail(inscripcion: any) {
         </div>
       </div>
     `,
+    attachments: [
+      {
+        filename: 'paPagar.png',
+        path: qrPath,
+        cid: 'qr_image',
+      },
+    ],
   };
 
   try {
@@ -220,7 +232,7 @@ export function app(): express.Express {
       const result = await col.insertOne(inscripcion);
 
       // Enviar correo de registro recibido
-      sendRegistrationReceivedEmail(inscripcion);
+      sendRegistrationReceivedEmail(inscripcion, browserDistFolder);
 
       res.status(201).json({
         message: 'Inscripción exitosa',

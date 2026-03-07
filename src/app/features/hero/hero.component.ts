@@ -299,10 +299,31 @@ const WHATSAPP_NUMBER = '573116227064';
         }
 
         @media (max-width: 640px) {
-          gap: 1rem;
-          li:nth-child(1),
-          li:nth-child(2) {
-            display: none;
+          padding: 0.5rem 0;
+
+          .nav-inner {
+            padding: 0 1rem;
+          }
+
+          .nav-logo {
+            font-size: 0.9rem;
+          }
+
+          .nav-links {
+            gap: 0.6rem;
+            li:nth-child(1),
+            li:nth-child(2) {
+              display: none;
+            }
+
+            a {
+              font-size: 0.8rem;
+            }
+
+            .nav-cta {
+              padding: 0.4rem 0.8rem;
+              font-size: 0.75rem;
+            }
           }
         }
       }
