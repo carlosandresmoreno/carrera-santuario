@@ -234,83 +234,91 @@ const WHATSAPP_NUMBER = '573116227064';
         background: rgba(255, 255, 255, 0.9);
         border: 1px solid rgba(37, 99, 235, 0.1);
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      }
 
-      .nav-inner {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0;
-      }
-
-      .nav-logo {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-decoration: none;
-        color: var(--color-text-primary);
-        font-size: 1.1rem;
-        font-weight: 700;
-
-        .logo-icon {
-          font-size: 1.5rem;
-        }
-        strong {
-          color: var(--color-primary);
-        }
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-
-        a {
-          color: var(--color-text-primary);
-          text-decoration: none;
-          font-size: 0.9rem;
-          font-weight: 600;
-          transition: color var(--transition-fast);
-
-          &:hover {
-            color: var(--color-primary);
-          }
-        }
-
-        .nav-cta {
-          background: var(--gradient-primary);
-          color: white !important;
-          padding: 0.5rem 1.25rem;
-          border-radius: var(--radius-full);
-          font-weight: 700;
-          font-size: 0.85rem;
-          transition:
-            transform var(--transition-spring),
-            box-shadow var(--transition-normal) !important;
-          animation: pulse-glow-green 2.5s ease-in-out infinite;
-
-          &:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
-          }
-        }
-
-        @media (max-width: 640px) {
-          padding: 0.5rem 0;
-
-          .nav-inner {
-            padding: 0 1rem;
-          }
+        .nav-inner {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0;
 
           .nav-logo {
-            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--color-text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+
+            .logo-icon {
+              font-size: 1.5rem;
+            }
+            strong {
+              color: var(--color-primary);
+            }
           }
 
           .nav-links {
-            gap: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            a {
+              color: var(--color-text-primary);
+              text-decoration: none;
+              font-size: 0.9rem;
+              font-weight: 600;
+              transition: color var(--transition-fast);
+
+              &:hover {
+                color: var(--color-primary);
+              }
+            }
+
+            .nav-cta {
+              background: var(--gradient-primary);
+              color: white !important;
+              padding: 0.5rem 1.25rem;
+              border-radius: var(--radius-full);
+              font-weight: 700;
+              font-size: 0.85rem;
+              transition:
+                transform var(--transition-spring),
+                box-shadow var(--transition-normal) !important;
+              animation: pulse-glow-green 2.5s ease-in-out infinite;
+
+              &:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.4);
+              }
+            }
+          }
+        }
+      }
+
+      @media (max-width: 640px) {
+        .hero-nav {
+          padding: 0.5rem 0.75rem;
+          width: calc(100% - 1rem);
+          top: 0.5rem;
+
+          .nav-logo {
+            display: none;
+          }
+
+          .nav-inner {
+            justify-content: center !important;
+            gap: 0.75rem;
+          }
+
+          .nav-links {
+            width: 100%;
+            justify-content: center;
+            gap: 0.75rem !important;
+
             li:nth-child(1),
             li:nth-child(2) {
               display: none;
@@ -318,11 +326,13 @@ const WHATSAPP_NUMBER = '573116227064';
 
             a {
               font-size: 0.8rem;
+              white-space: nowrap;
             }
 
             .nav-cta {
-              padding: 0.4rem 0.8rem;
-              font-size: 0.75rem;
+              padding: 0.5rem 1rem;
+              font-size: 0.8rem;
+              white-space: nowrap;
             }
           }
         }
