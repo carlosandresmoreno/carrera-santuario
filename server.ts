@@ -41,9 +41,10 @@ const SMTP_CONFIG = {
   host: 'smtp.gmail.com',
   port: 465, // SSL
   secure: true,
+  family: 4, // Force IPv4 for better reliability on cloud providers like Render
   auth: {
-    user: 'santuariocorre5k@gmail.com',
-    pass: 'bggfmmpwvqjilyfg',
+    user: process.env['SMTP_USER'] || 'santuariocorre5k@gmail.com',
+    pass: process.env['SMTP_PASS'] || 'bggfmmpwvqjilyfg',
   },
 };
 
@@ -107,6 +108,9 @@ async function sendRegistrationReceivedEmail(
   };
 
   try {
+    console.log(
+      `⏳ Intentando enviar email de registro a: ${inscripcion.correo}...`,
+    );
     const info = await transporter.sendMail(mailOptions);
     console.log(
       `✅ Email de registro enviado a: ${inscripcion.correo}`,
@@ -154,6 +158,9 @@ async function sendConfirmationEmail(inscripcion: any) {
   };
 
   try {
+    console.log(
+      `⏳ Intentando enviar email de confirmación a: ${inscripcion.correo}...`,
+    );
     const info = await transporter.sendMail(mailOptions);
     console.log(
       `✅ Email de confirmación enviado a: ${inscripcion.correo}`,
