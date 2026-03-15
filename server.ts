@@ -4,7 +4,7 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { MongoClient, ObjectId } from 'mongodb';
-import nodemailer from 'nodemailer';
+import emailjs from '@emailjs/nodejs';
 import bootstrap from './src/main.server';
 
 // ── MongoDB Config ────────────────────────────────────────────────────────
@@ -37,137 +37,80 @@ async function getCollection() {
   }
 }
 // ── Email Config ──────────────────────────────────────────────────────────
-const SMTP_CONFIG = {
-  host: 'smtp.gmail.com',
-  port: 465, // SSL
-  secure: true,
-  family: 4, // Force IPv4 for better reliability on cloud providers like Render
-  auth: {
-    user: process.env['SMTP_USER'] || 'santuariocorre5k@gmail.com',
-    pass: process.env['SMTP_PASS'] || 'bggfmmpwvqjilyfg',
-  },
+const EMAILJS_KEYS = {
+  publicKey: process.env['EMAILJS_PUBLIC_KEY'] || 'RRr88Nz56DOBz5hDk',
+  privateKey: process.env['EMAILJS_PRIVATE_KEY'] || 'W2OjEjjCOOdY1npVEINYp',
 };
 
-const transporter = nodemailer.createTransport(SMTP_CONFIG);
+const EMAILJS_SERVICE_ID =
+  process.env['EMAILJS_SERVICE_ID'] || 'service_umc6ydr';
+const EMAILJS_TEMPLATE_RECIBIDA =
+  process.env['EMAILJS_TEMPLATE_RECIBIDA'] || 'template_52obge8';
+const EMAILJS_TEMPLATE_CONFIRMADO =
+  process.env['EMAILJS_TEMPLATE_CONFIRMADO'] || 'template_na03y06';
 
-// Verify connection configuration
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error('❌ Error de conexión SMTP:', error);
-  } else {
-    console.log('🚀 Servidor de correo listo para enviar mensajes');
-  }
-});
+async function sendRegistrationReceivedEmail(inscripcion: any) {
+  const qrUrl =
+    'https://carrera-santuario-5k-10k.onrender.com/assets/paPagar.png';
 
-async function sendRegistrationReceivedEmail(
-  inscripcion: any,
-  browserDistFolder: string,
-) {
-  const qrPath = join(browserDistFolder, 'assets/paPagar.png');
-
-  const mailOptions = {
-    from: `"Santuario Corre" <${SMTP_CONFIG.auth.user}>`,
-    to: inscripcion.correo,
-    subject: '📝 Inscripción Recibida - Santuario Corre 2026',
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0f2fe; border-radius: 12px; overflow: hidden;">
-        <div style="background: #2563eb; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0;">Santuario Corre 2026</h1>
-        </div>
-        <div style="padding: 30px; line-height: 1.6; color: #334155;">
-          <h2 style="color: #0f172a;">¡Hola, ${inscripcion.primerNombre}!</h2>
-          <p>Hemos recibido tu inscripción correctamente. ¡Gracias por querer ser parte de esta historia!</p>
-          
-          <div style="background: #fff7ed; padding: 20px; border: 1px solid #ffedd5; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0; color: #9a3412;"><strong>⚠️ Tu cupo aún no está asegurado.</strong></p>
-            <p style="margin: 10px 0 0;">Para completar tu inscripción, por favor realiza el pago por <strong>$${inscripcion.distancia === '10k' ? '120.000' : '85.000'} COP</strong> (según la etapa actual) escaneando el siguiente QR desde tu App bancaria (Nequi, Bancolombia, etc.):</p>
-            
-            <div style="text-align: center; margin: 20px 0;">
-              <img src="cid:qr_image" alt="QR de Pago" style="width: 200px; height: 200px; border-radius: 8px;" />
-            </div>
-            
-            <p style="margin: 0; font-size: 0.9rem;">Una vez realizado el pago, nuestro equipo lo verificará y recibirás otro correo de confirmación final.</p>
-          </div>
-
-          <p>Si tienes alguna duda, escríbenos a nuestro WhatsApp: <a href="https://wa.me/573116227064">311 622 7064</a></p>
-          
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
-          <p style="font-size: 12px; color: #64748b; text-align: center;">
-            &copy; 2026 Santuario Corre · Bosque Campista Tamaná
-          </p>
-        </div>
-      </div>
-    `,
-    attachments: [
-      {
-        filename: 'paPagar.png',
-        path: qrPath,
-        cid: 'qr_image',
-      },
-    ],
+  const templateParams = {
+    to_email: inscripcion.correo,
+    to_name: inscripcion.primerNombre,
+    distancia: inscripcion.distancia === '10k' ? '120.000' : '85.000',
+    qrUrl: qrUrl,
   };
 
   try {
     console.log(
       `⏳ Intentando enviar email de registro a: ${inscripcion.correo}...`,
     );
-    const info = await transporter.sendMail(mailOptions);
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_RECIBIDA,
+      templateParams,
+      EMAILJS_KEYS,
+    );
     console.log(
       `✅ Email de registro enviado a: ${inscripcion.correo}`,
-      info.messageId,
+      response.status,
+      response.text,
     );
-  } catch (error) {
-    console.error('❌ Error enviando email de registro:', error);
+  } catch (error: any) {
+    console.error(
+      '❌ Error enviando email de registro:',
+      error.text || error.message || error,
+    );
   }
 }
 
 async function sendConfirmationEmail(inscripcion: any) {
-  const mailOptions = {
-    from: `"Santuario Corre" <${SMTP_CONFIG.auth.user}>`,
-    to: inscripcion.correo,
-    subject: '🏁 ¡Pago Confirmado! - Santuario Corre 2026',
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0f2fe; border-radius: 12px; overflow: hidden;">
-        <div style="background: #2563eb; padding: 20px; text-align: center; color: white;">
-          <h1 style="margin: 0;">Santuario Corre 2026</h1>
-        </div>
-        <div style="padding: 30px; line-height: 1.6; color: #334155;">
-          <h2 style="color: #0f172a;">¡Hola, ${inscripcion.primerNombre}!</h2>
-          <p>Nos alegra informarte que hemos <strong>aprobado tu pago</strong> para la carrera.</p>
-          
-          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 0;"><strong>Detalles de tu inscripción:</strong></p>
-            <ul style="margin: 10px 0 0; padding-left: 20px;">
-              <li><strong>Distancia:</strong> ${inscripcion.distancia === '10k' ? '10K' : '5K'}</li>
-              <li><strong>Talla de Camiseta:</strong> ${inscripcion.tallaCamiseta}</li>
-              <li><strong>Estado:</strong> Confirmado ✅</li>
-            </ul>
-          </div>
-
-          <p>Ya falta menos para vernos en la línea de salida el <strong>18 de octubre de 2026</strong>. Muy pronto te enviaremos más información sobre la entrega de kits.</p>
-          
-          <p>Si tienes alguna duda, escríbenos a nuestro WhatsApp: <a href="https://wa.me/573116227064">311 622 7064</a></p>
-          
-          <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
-          <p style="font-size: 12px; color: #64748b; text-align: center;">
-            &copy; 2026 Santuario Corre · Bosque Campista Tamaná
-          </p>
-        </div>
-      </div>
-    `,
+  const templateParams = {
+    to_email: inscripcion.correo,
+    to_name: inscripcion.primerNombre,
+    distancia: inscripcion.distancia === '10k' ? '10K' : '5K',
+    tallaCamiseta: inscripcion.tallaCamiseta,
   };
 
   try {
     console.log(
       `⏳ Intentando enviar email de confirmación a: ${inscripcion.correo}...`,
     );
-    const info = await transporter.sendMail(mailOptions);
+    const response = await emailjs.send(
+      EMAILJS_SERVICE_ID,
+      EMAILJS_TEMPLATE_CONFIRMADO,
+      templateParams,
+      EMAILJS_KEYS,
+    );
     console.log(
       `✅ Email de confirmación enviado a: ${inscripcion.correo}`,
-      info.messageId,
+      response.status,
+      response.text,
     );
-  } catch (error) {
-    console.error('❌ Error enviando email de confirmación:', error);
+  } catch (error: any) {
+    console.error(
+      '❌ Error enviando email de confirmación:',
+      error.text || error.message || error,
+    );
   }
 }
 
@@ -239,7 +182,7 @@ export function app(): express.Express {
       const result = await col.insertOne(inscripcion);
 
       // Enviar correo de registro recibido
-      sendRegistrationReceivedEmail(inscripcion, browserDistFolder);
+      sendRegistrationReceivedEmail(inscripcion);
 
       res.status(201).json({
         message: 'Inscripción exitosa',
