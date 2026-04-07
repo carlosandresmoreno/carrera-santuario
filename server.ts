@@ -22,10 +22,7 @@ async function getCollection() {
   try {
     if (!client) {
       console.log('⏳ Intentando conectar a MongoDB...');
-      client = new MongoClient(MONGO_URI, {
-        connectTimeoutMS: 8000,
-        serverSelectionTimeoutMS: 8000,
-      });
+      client = new MongoClient(MONGO_URI);
       await client.connect();
       console.log('✅ MongoDB conectado exitosamente');
     }
@@ -53,10 +50,16 @@ async function sendRegistrationReceivedEmail(inscripcion: any) {
   const qrUrl =
     'https://carrera-santuario-5k-10k.onrender.com/assets/paPagar.png';
 
+  let precioNormal = inscripcion.distancia === '10k' ? 120000 : 105000;
+  if (inscripcion.codigoDescuento && inscripcion.codigoDescuento.trim() !== '') {
+    precioNormal = precioNormal * 0.85; 
+  }
+  const precioFormateado = precioNormal.toLocaleString('es-CO');
+
   const templateParams = {
     to_email: inscripcion.correo,
     to_name: inscripcion.primerNombre,
-    distancia: inscripcion.distancia === '10k' ? '120.000' : '85.000',
+    distancia: precioFormateado,
     qrUrl: qrUrl,
   };
 

@@ -16,6 +16,7 @@ export interface InscripcionPayload {
   contactoEmergencia: string;
   tallaCamiseta: string;
   distancia: string;
+  codigoDescuento?: string;
 }
 
 export interface InscripcionStatus {
@@ -43,6 +44,7 @@ export interface InscripcionAdmin {
   distancia: string;
   estadoPago: string;
   fechaInscripcion: string;
+  codigoDescuento?: string;
 }
 
 @Injectable({ providedIn: 'root' })

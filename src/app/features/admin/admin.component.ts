@@ -118,6 +118,7 @@ import {
                     <th>Género</th>
                     <th>EPS</th>
                     <th>Correo</th>
+                    <th>Código</th>
                     <th>Fecha</th>
                     <th>Estado</th>
                     <th>Acción</th>
@@ -148,6 +149,7 @@ import {
                       <td>{{ ins.genero }}</td>
                       <td>{{ ins.eps }}</td>
                       <td class="email-cell">{{ ins.correo }}</td>
+                      <td>{{ ins.codigoDescuento || '-' }}</td>
                       <td>{{ formatDate(ins.fechaInscripcion) }}</td>
                       <td>
                         @if (ins.estadoPago === 'aprobado') {
@@ -702,6 +704,7 @@ export class AdminComponent {
       'Distancia',
       'Estado Pago',
       'Fecha Inscripción',
+      'Código Descuento',
     ];
 
     const escape = (v: string) => {
@@ -728,6 +731,7 @@ export class AdminComponent {
         i.distancia === '10k' ? '10K' : '5K',
         i.estadoPago === 'aprobado' ? 'Aprobado' : 'Pendiente',
         this.formatDate(i.fechaInscripcion),
+        i.codigoDescuento || '',
       ]
         .map(escape)
         .join(','),

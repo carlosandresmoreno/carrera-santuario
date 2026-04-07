@@ -1,29 +1,34 @@
-# CarreraSantuario
+# Santuario Corre 5K & 10K 2026
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.17.
+Este proyecto es una aplicación web para la gestión de inscripciones de la carrera "Santuario Corre 5K & 10K 2026". Está construido utilizando **Angular 17** con **Angular SSR (Server-Side Rendering)** y un backend integrado en **Node.js/Express** que se conecta a **MongoDB**.
 
-## Development server
+## Requisitos Previos
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Node.js (v18 o superior recomendado)
+- MongoDB (Configurado en el archivo `server.ts` o mediante variable de entorno `MONGO_URI`)
 
-## Code scaffolding
+## Desarrollo Local
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### 1. Instalación de dependencias
+```bash
+npm install
+```
 
-## Build
+### 2. Construcción y Ejecución (SSR)
+Para correr la aplicación con todas sus funcionalidades (incluyendo la API y el renderizado en el servidor), debes construir el proyecto y luego ejecutar el servidor:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```bash
+# Construir el proyecto
+ng build
 
-## Running unit tests
+# Ejecutar el servidor SSR localmente
+npm run serve:ssr:carrera-santuario
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+La aplicación estará disponible en `http://localhost:4000`.
 
-## Running end-to-end tests
+## Scripts Disponibles
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
-
-pa que de toca aSI npm run serve:ssr:carrera-santuario
+- `ng serve`: Lanza el servidor de desarrollo de Angular (solo frontend, sin SSR/API completa).
+- `ng build`: Compila la aplicación para producción.
+- `npm run serve:ssr:carrera-santuario`: Inicia el servidor SSR en el puerto 4000.

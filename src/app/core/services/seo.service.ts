@@ -10,7 +10,7 @@ export interface SeoConfig {
   keywords?: string;
 }
 
-const SITE_URL = 'https://santuariocorre.com';
+const SITE_URL = 'https://carrera-santuario-5k-10k.onrender.com';
 const SITE_NAME = 'Santuario Corre';
 const OG_IMAGE = `${SITE_URL}/assets/og-image.jpg`;
 const INSTAGRAM = 'https://www.instagram.com/santuariocorre5ky10k/';

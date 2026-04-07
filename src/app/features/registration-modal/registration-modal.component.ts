@@ -317,6 +317,18 @@ interface ModalData {
               }
             </div>
 
+            <!-- Código de descuento -->
+            <div class="form-group">
+              <label for="codigoDescuento">Código de descuento (opcional)</label>
+              <input
+                id="codigoDescuento"
+                type="text"
+                formControlName="codigoDescuento"
+                placeholder="Ingresa tu código si tienes uno"
+                autocomplete="off"
+              />
+            </div>
+
             <!-- Error message -->
             @if (errorMsg()) {
               <div class="alert-error">❌ {{ errorMsg() }}</div>
@@ -356,6 +368,17 @@ interface ModalData {
                       form.get('distancia')?.value === '10k' ? '10K' : '5K'
                     }})</strong
                   >
+                  @if (form.get('codigoDescuento')?.value) {
+                    <div class="discount-alert">
+                      🎉 <strong>¡Atención!</strong> Si tu código de descuento es válido, tu valor de inscripción tiene un <strong>15% de descuento</strong>.
+                      <br />
+                      Valor a consignar: <strong class="price-highlight">{{ form.get('distancia')?.value === '10k' ? '$102.000' : '$89.250' }}</strong>
+                    </div>
+                  } @else {
+                    <div class="normal-price">
+                      Valor a consignar: <strong>{{ form.get('distancia')?.value === '10k' ? '$120.000' : '$105.000' }}</strong>
+                    </div>
+                  }
                 </li>
                 <li>
                   <strong>Envía el comprobante de pago</strong> al WhatsApp:<br />
@@ -736,6 +759,42 @@ interface ModalData {
           color: var(--color-text-secondary);
         }
       }
+
+      .discount-alert {
+        margin-top: 0.75rem;
+        padding: 0.85rem;
+        background: rgba(234, 179, 8, 0.15);
+        border: 2px dashed rgba(234, 179, 8, 0.5);
+        border-radius: var(--radius-md);
+        color: var(--color-text-primary);
+        font-size: 0.95rem;
+        line-height: 1.5;
+        
+        strong {
+          color: #b45309;
+        }
+        
+        .price-highlight {
+          font-size: 1.25rem;
+          color: #166534;
+          display: inline-block;
+          margin-top: 0.5rem;
+          background: rgba(255, 255, 255, 0.6);
+          padding: 0.2rem 0.6rem;
+          border-radius: var(--radius-sm);
+        }
+      }
+      
+      .normal-price {
+        margin-top: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--color-text-primary);
+        
+        strong {
+          font-size: 1.1rem;
+          color: var(--color-accent);
+        }
+      }
     `,
   ],
 })
@@ -773,6 +832,7 @@ export class RegistrationModalComponent {
       [Validators.required, Validators.pattern(/^[0-9]{7,10}$/)],
     ],
     tallaCamiseta: ['', Validators.required],
+    codigoDescuento: [''],
   });
 
   close(): void {
