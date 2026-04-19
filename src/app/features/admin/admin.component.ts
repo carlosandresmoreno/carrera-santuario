@@ -21,16 +21,16 @@ import {
         <!-- Login -->
         <div class="login-wrapper">
           <div class="login-card glass-card">
-            <h1 class="login-title">🔒 Panel de Administrador</h1>
+            <h1 class="login-title">Panel de Administrador</h1>
             <p class="login-subtitle">Santuario Corre 5K & 10K 2026</p>
             <div class="login-form">
               <input
                 type="password"
                 [(ngModel)]="password"
-                placeholder="Contraseña"
+                placeholder="Contrasena"
                 class="login-input"
                 (keyup.enter)="login()"
-                aria-label="Contraseña de administrador"
+                aria-label="Contrasena de administrador"
               />
               @if (loginError()) {
                 <span class="login-error">{{ loginError() }}</span>
@@ -41,7 +41,7 @@ import {
                 [disabled]="loggingIn()"
               >
                 @if (loggingIn()) {
-                  ⏳ Verificando...
+                  Verificando...
                 } @else {
                   Ingresar
                 }
@@ -54,10 +54,10 @@ import {
         <div class="admin-dashboard section-container">
           <div class="admin-header">
             <div>
-              <h1 class="admin-title">📊 Panel de Inscripciones</h1>
+              <h1 class="admin-title">Panel de Inscripciones</h1>
               <p class="admin-summary">
-                Total: <strong>{{ inscripciones().length }}</strong> ·
-                Aprobados: <strong>{{ countAprobados() }}</strong> · Pendientes:
+                Total: <strong>{{ inscripciones().length }}</strong> -
+                Aprobados: <strong>{{ countAprobados() }}</strong> - Pendientes:
                 <strong>{{ inscripciones().length - countAprobados() }}</strong>
               </p>
             </div>
@@ -67,16 +67,16 @@ import {
                 (click)="exportToExcel()"
                 [disabled]="inscripciones().length === 0"
               >
-                📁 Descargar Excel
+                Descargar Excel
               </button>
               <button
                 class="refresh-btn"
                 (click)="loadData()"
                 [disabled]="loading()"
               >
-                🔄 Actualizar
+                Actualizar
               </button>
-              <a href="/" class="back-btn">← Volver al sitio</a>
+              <a href="/" class="back-btn">Volver al sitio</a>
             </div>
           </div>
 
@@ -100,28 +100,28 @@ import {
             </select>
           </div>
 
-          <!-- Table -->
+          <!-- Table Content -->
           <div class="table-wrapper">
             @if (loading()) {
-              <div class="loading-state">⏳ Cargando inscripciones...</div>
+              <div class="loading-state">Cargando inscripciones...</div>
             } @else if (filteredInscripciones().length === 0) {
               <div class="empty-state">No hay inscripciones que mostrar</div>
             } @else {
-              <table class="admin-table" role="table">
+              <table class="admin-table">
                 <thead>
                   <tr>
                     <th>#</th>
                     <th>Nombre</th>
                     <th>Documento</th>
+                    <th>Telefono</th>
+                    <th>Ciudad</th>
                     <th>Distancia</th>
                     <th>Talla</th>
-                    <th>Género</th>
+                    <th>Genero</th>
                     <th>EPS</th>
                     <th>Correo</th>
-                    <th>Código</th>
-                    <th>Fecha</th>
                     <th>Estado</th>
-                    <th>Acción</th>
+                    <th>Accion</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -137,6 +137,8 @@ import {
                         {{ ins.primerApellido }} {{ ins.segundoApellido }}
                       </td>
                       <td>{{ ins.tipoDocumento }} {{ ins.numeroDocumento }}</td>
+                      <td>{{ ins.telefono }}</td>
+                      <td>{{ ins.ciudad }}</td>
                       <td>
                         <span
                           class="distance-badge"
@@ -149,47 +151,64 @@ import {
                       <td>{{ ins.genero }}</td>
                       <td>{{ ins.eps }}</td>
                       <td class="email-cell">{{ ins.correo }}</td>
-                      <td>{{ ins.codigoDescuento || '-' }}</td>
-                      <td>{{ formatDate(ins.fechaInscripcion) }}</td>
                       <td>
-                        @if (ins.estadoPago === 'aprobado') {
-                          <span class="status-badge approved">✅ Aprobado</span>
-                        } @else {
-                          <span class="status-badge pending">⏳ Pendiente</span>
-                        }
+                        <div class="action-badges">
+                          <span
+                            class="status-badge"
+                            [class.approved]="ins.estadoPago === 'aprobado'"
+                            [class.pending]="ins.estadoPago !== 'aprobado'"
+                          >
+                            {{
+                              ins.estadoPago === 'aprobado'
+                                ? 'Aprobado'
+                                : 'Pendiente'
+                            }}
+                          </span>
+                          @if (ins.codigoDescuento) {
+                            <span class="status-badge discount"
+                              >Desc: {{ ins.codigoDescuento }}</span
+                            >
+                          }
+                        </div>
                       </td>
                       <td>
-                        @if (ins.estadoPago !== 'aprobado') {
+                        <div class="action-buttons">
                           <button
-                            class="approve-btn"
-                            (click)="aprobarPago(ins._id)"
-                            [disabled]="approvingId() === ins._id"
+                            class="edit-btn"
+                            (click)="startEdit(ins)"
+                            title="Editar"
                           >
-                            @if (approvingId() === ins._id) {
-                              ⏳
-                            } @else {
-                              ✅ Aprobar
-                            }
+                            Edit
                           </button>
-                        }
 
-                        <button
-                          class="delete-btn"
-                          (click)="
-                            eliminarInscripcion(
-                              ins._id,
-                              ins.primerNombre + ' ' + ins.primerApellido
-                            )
-                          "
-                          [disabled]="deletingId() === ins._id"
-                          title="Eliminar inscripción"
-                        >
-                          @if (deletingId() === ins._id) {
-                            ⏳
-                          } @else {
-                            🗑️
+                          @if (ins.estadoPago !== 'aprobado') {
+                            <button
+                              class="approve-btn"
+                              (click)="aprobarPago(ins._id)"
+                              [disabled]="approvingId() === ins._id"
+                            >
+                              {{
+                                approvingId() === ins._id
+                                  ? 'Wait...'
+                                  : 'Aprobar'
+                              }}
+                            </button>
                           }
-                        </button>
+
+                          <button
+                            class="delete-btn"
+                            (click)="
+                              eliminarInscripcion(
+                                ins._id,
+                                ins.primerNombre + ' ' + ins.primerApellido
+                              )
+                            "
+                            [disabled]="deletingId() === ins._id"
+                            title="Eliminar"
+                          >
+                            {{ deletingId() === ins._id ? 'Wait' : 'Del' }}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   }
@@ -197,6 +216,78 @@ import {
               </table>
             }
           </div>
+
+          <!-- Edit Modal -->
+          @if (editingInscripcion()) {
+            <div class="modal-backdrop" (click)="cancelEdit()">
+              <div
+                class="modal-container glass-card"
+                (click)="$event.stopPropagation()"
+              >
+                <div class="modal-header">
+                  <h2 class="modal-title">Editar Inscripcion</h2>
+                  <p class="modal-subtitle">Modificando datos del atleta</p>
+                </div>
+
+                <div class="edit-grid">
+                  <div class="edit-group">
+                    <label>Primer Nombre</label>
+                    <input [(ngModel)]="editBuffer.primerNombre" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Primer Apellido</label>
+                    <input [(ngModel)]="editBuffer.primerApellido" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Num Doc</label>
+                    <input [(ngModel)]="editBuffer.numeroDocumento" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Telefono</label>
+                    <input [(ngModel)]="editBuffer.telefono" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Ciudad</label>
+                    <input [(ngModel)]="editBuffer.ciudad" />
+                  </div>
+                  <div class="edit-group">
+                    <label>EPS</label>
+                    <input [(ngModel)]="editBuffer.eps" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Talla</label>
+                    <select [(ngModel)]="editBuffer.tallaCamiseta">
+                      <option value="XS">XS</option>
+                      <option value="S">S</option>
+                      <option value="M">M</option>
+                      <option value="L">L</option>
+                      <option value="XL">XL</option>
+                    </select>
+                  </div>
+                  <div class="edit-group">
+                    <label>Distancia</label>
+                    <select [(ngModel)]="editBuffer.distancia">
+                      <option value="5k">5K</option>
+                      <option value="10k">10K</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="modal-actions">
+                  <button class="cancel-btn" (click)="cancelEdit()">
+                    Cancelar
+                  </button>
+                  <button
+                    class="save-btn"
+                    (click)="saveEdit()"
+                    [disabled]="savingEdit()"
+                  >
+                    {{ savingEdit() ? 'Guardando...' : 'Guardar Cambios' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
         </div>
       }
     </div>
@@ -209,7 +300,7 @@ import {
         color: var(--color-text-primary);
       }
 
-      /* ── Login ── */
+      /* Login */
       .login-wrapper {
         min-height: 100vh;
         display: flex;
@@ -217,32 +308,27 @@ import {
         justify-content: center;
         padding: 2rem;
       }
-
       .login-card {
         width: 100%;
         max-width: 400px;
         padding: 2.5rem;
         text-align: center;
       }
-
       .login-title {
         font-size: 1.5rem;
         font-weight: 800;
         margin: 0 0 0.5rem;
       }
-
       .login-subtitle {
         font-size: 0.9rem;
         color: var(--color-text-muted);
         margin: 0 0 2rem;
       }
-
       .login-form {
         display: flex;
         flex-direction: column;
         gap: 1rem;
       }
-
       .login-input {
         padding: 0.875rem 1rem;
         background: rgba(255, 255, 255, 0.05);
@@ -250,21 +336,8 @@ import {
         border-radius: var(--radius-md);
         color: var(--color-text-primary);
         font-size: 1rem;
-        font-family: var(--font-sans);
         text-align: center;
-
-        &:focus {
-          outline: none;
-          border-color: var(--color-primary-light);
-        }
       }
-
-      .login-error {
-        font-size: 0.8rem;
-        color: #ef4444;
-        font-weight: 500;
-      }
-
       .login-btn {
         padding: 0.875rem;
         background: var(--gradient-primary);
@@ -273,27 +346,18 @@ import {
         border: none;
         border-radius: var(--radius-full);
         cursor: pointer;
-        font-family: var(--font-sans);
         font-size: 1rem;
-        transition: all var(--transition-spring);
-
-        &:hover:not(:disabled) {
-          transform: scale(1.02);
-          box-shadow: var(--shadow-glow-green);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
+      }
+      .login-error {
+        font-size: 0.8rem;
+        color: #ef4444;
       }
 
-      /* ── Dashboard ── */
+      /* Dashboard */
       .admin-dashboard {
         padding: 2rem 1rem;
         max-width: 1400px;
       }
-
       .admin-header {
         display: flex;
         justify-content: space-between;
@@ -302,94 +366,51 @@ import {
         gap: 1rem;
         margin-bottom: 2rem;
       }
-
       .admin-title {
         font-size: 1.75rem;
         font-weight: 900;
-        margin: 0 0 0.25rem;
+        margin: 0;
       }
-
       .admin-summary {
         font-size: 0.9rem;
         color: var(--color-text-secondary);
-        margin: 0;
-        strong {
-          color: var(--color-accent);
-        }
       }
-
       .admin-actions {
         display: flex;
         gap: 0.75rem;
-        align-items: center;
       }
-
-      .export-btn {
+      .export-btn,
+      .refresh-btn,
+      .back-btn {
         padding: 0.625rem 1.25rem;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .export-btn {
         background: rgba(244, 162, 97, 0.15);
         border: 1px solid rgba(244, 162, 97, 0.3);
         color: var(--color-accent);
-        border-radius: var(--radius-full);
-        font-weight: 600;
-        font-size: 0.85rem;
-        font-family: var(--font-sans);
-        cursor: pointer;
-        transition: all var(--transition-micro);
-
-        &:hover:not(:disabled) {
-          background: rgba(244, 162, 97, 0.25);
-          transform: scale(1.02);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
       }
-
       .refresh-btn {
-        padding: 0.625rem 1.25rem;
         background: var(--gradient-primary);
         color: white;
         border: none;
-        border-radius: var(--radius-full);
-        font-weight: 600;
-        font-size: 0.85rem;
-        font-family: var(--font-sans);
-        cursor: pointer;
-
-        &:disabled {
-          opacity: 0.6;
-        }
       }
-
       .back-btn {
-        padding: 0.625rem 1.25rem;
+        background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--color-border);
-        border-radius: var(--radius-full);
         color: var(--color-text-secondary);
-        text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        transition: all var(--transition-micro);
-
-        &:hover {
-          border-color: var(--color-text-muted);
-          color: var(--color-text-primary);
-        }
       }
 
-      /* ── Filter ── */
+      /* Filters */
       .filter-bar {
         display: flex;
         gap: 0.75rem;
         margin-bottom: 1.5rem;
-
-        @media (max-width: 600px) {
-          flex-direction: column;
-        }
       }
-
       .filter-input {
         flex: 1;
         padding: 0.75rem 1rem;
@@ -397,165 +418,144 @@ import {
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
         color: var(--color-text-primary);
-        font-size: 0.9rem;
-        font-family: var(--font-sans);
-
-        &:focus {
-          outline: none;
-          border-color: var(--color-primary-light);
-        }
-
-        &::placeholder {
-          color: var(--color-text-muted);
-        }
       }
-
       .filter-select {
         padding: 0.75rem 1rem;
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
         color: var(--color-text-primary);
-        font-size: 0.9rem;
-        font-family: var(--font-sans);
-        cursor: pointer;
       }
 
-      /* ── Table ── */
+      /* Table */
       .table-wrapper {
         overflow-x: auto;
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
+        background: rgba(255, 255, 255, 0.02);
       }
-
-      .loading-state,
-      .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: var(--color-text-muted);
-        font-size: 1rem;
-      }
-
       .admin-table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.82rem;
-
-        th {
-          background: rgba(255, 255, 255, 0.05);
-          padding: 0.75rem 0.625rem;
-          text-align: left;
-          font-weight: 700;
-          color: var(--color-text-secondary);
-          white-space: nowrap;
-          border-bottom: 1px solid var(--color-border);
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        td {
-          padding: 0.75rem 0.625rem;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-          color: var(--color-text-primary);
-          vertical-align: middle;
-        }
-
-        tr:hover td {
-          background: rgba(255, 255, 255, 0.02);
-        }
-
-        .row-approved td {
-          opacity: 0.7;
-        }
+        font-size: 0.85rem;
+      }
+      .admin-table th {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 1rem;
+        text-align: left;
+        color: var(--color-text-secondary);
+        border-bottom: 1px solid var(--color-border);
+      }
+      .admin-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .status-badge.approved {
+        background: rgba(45, 106, 79, 0.2);
+        color: #4ade80;
+      }
+      .status-badge.pending {
+        background: rgba(244, 162, 97, 0.2);
+        color: #f4a261;
       }
 
-      .name-cell {
+      .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .edit-btn,
+      .approve-btn,
+      .delete-btn {
+        padding: 0.4rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
         font-weight: 600;
-        white-space: nowrap;
+        cursor: pointer;
+      }
+      .edit-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid var(--color-border);
+      }
+      .approve-btn {
+        background: #2d6a4f;
+        color: white;
+        border: none;
+      }
+      .delete-btn {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
       }
 
-      .email-cell {
-        font-size: 0.78rem;
+      /* Modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal-container {
+        width: 100%;
+        max-width: 600px;
+        padding: 2rem;
+        border: 1px solid var(--color-border);
+      }
+      .edit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+      .edit-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .edit-group label {
+        font-size: 0.75rem;
+        font-weight: 700;
         color: var(--color-text-muted);
       }
-
-      .distance-badge {
-        display: inline-block;
-        padding: 0.2rem 0.5rem;
-        border-radius: var(--radius-full);
-        font-weight: 700;
-        font-size: 0.7rem;
-        background: var(--gradient-primary);
+      .edit-group input,
+      .edit-group select {
+        padding: 0.75rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-sm);
         color: white;
-
-        &.dist-10k {
-          background: var(--gradient-accent);
-        }
       }
-
-      .status-badge {
-        display: inline-block;
-        padding: 0.25rem 0.625rem;
-        border-radius: var(--radius-full);
-        font-size: 0.72rem;
-        font-weight: 700;
-        white-space: nowrap;
-
-        &.approved {
-          background: rgba(45, 106, 79, 0.15);
-          color: var(--color-primary-light);
-        }
-
-        &.pending {
-          background: rgba(244, 162, 97, 0.15);
-          color: var(--color-accent);
-        }
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
       }
-
-      .approve-btn {
-        padding: 0.375rem 0.75rem;
+      .save-btn {
+        padding: 0.75rem 1.5rem;
         background: var(--gradient-primary);
         color: white;
         border: none;
         border-radius: var(--radius-full);
-        font-size: 0.75rem;
         font-weight: 700;
         cursor: pointer;
-        font-family: var(--font-sans);
-        white-space: nowrap;
-        transition: all var(--transition-micro);
-
-        &:disabled {
-          opacity: 0.5;
-        }
       }
-
-      .delete-btn {
-        padding: 0.375rem 0.5rem;
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-        border-radius: var(--radius-md);
-        font-size: 0.85rem;
+      .cancel-btn {
+        padding: 0.75rem 1.5rem;
+        background: transparent;
+        border: 1px solid var(--color-border);
+        color: var(--color-text-secondary);
+        border-radius: var(--radius-full);
         cursor: pointer;
-        transition: all var(--transition-micro);
-        margin-left: 0.5rem;
-
-        &:hover:not(:disabled) {
-          background: #ef4444;
-          color: white;
-          transform: scale(1.05);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-        }
-      }
-
-      .done-text {
-        color: var(--color-text-muted);
-        font-size: 0.85rem;
       }
     `,
   ],
@@ -575,9 +575,12 @@ export class AdminComponent {
   readonly approvingId = signal<string | null>(null);
   readonly deletingId = signal<string | null>(null);
 
+  readonly editingInscripcion = signal<InscripcionAdmin | null>(null);
+  readonly savingEdit = signal(false);
+  editBuffer: Partial<InscripcionAdmin> = {};
+
   login(): void {
     if (!this.password.trim()) return;
-
     this.loggingIn.set(true);
     this.loginError.set('');
 
@@ -589,7 +592,7 @@ export class AdminComponent {
       },
       error: () => {
         this.loggingIn.set(false);
-        this.loginError.set('Contraseña incorrecta');
+        this.loginError.set('Password incorrecto');
       },
     });
   }
@@ -609,11 +612,9 @@ export class AdminComponent {
 
   filteredInscripciones(): InscripcionAdmin[] {
     let list = this.inscripciones();
-
     if (this.filterStatus !== 'todos') {
       list = list.filter((i) => i.estadoPago === this.filterStatus);
     }
-
     const q = this.filterText.toLowerCase().trim();
     if (q) {
       list = list.filter(
@@ -623,7 +624,6 @@ export class AdminComponent {
           i.numeroDocumento.includes(q),
       );
     }
-
     return list;
   }
 
@@ -637,51 +637,58 @@ export class AdminComponent {
     this.service.aprobarPago(id, this.password).subscribe({
       next: () => {
         this.approvingId.set(null);
-        // Update local state
         this.inscripciones.update((list) =>
           list.map((i) =>
             i._id === id ? { ...i, estadoPago: 'aprobado' } : i,
           ),
         );
       },
-      error: () => {
-        this.approvingId.set(null);
-      },
+      error: () => this.approvingId.set(null),
     });
   }
 
   eliminarInscripcion(id: string, nombre: string): void {
-    if (
-      !confirm(
-        `¿Estás seguro de que deseas eliminar la inscripción de ${nombre}? Esta acción no se puede deshacer.`,
-      )
-    ) {
+    if (!confirm('Esta seguro de eliminar la inscripcion de ' + nombre + '?'))
       return;
-    }
-
     this.deletingId.set(id);
     this.service.eliminar(id, this.password).subscribe({
       next: () => {
         this.deletingId.set(null);
-        // Update local state
         this.inscripciones.update((list) => list.filter((i) => i._id !== id));
       },
-      error: (err) => {
-        this.deletingId.set(null);
-        alert('Error al eliminar: ' + (err.error?.error || 'Intenta de nuevo'));
-      },
+      error: () => this.deletingId.set(null),
     });
   }
 
-  formatDate(iso: string): string {
-    try {
-      return new Date(iso).toLocaleDateString('es-CO', {
-        day: '2-digit',
-        month: 'short',
-      });
-    } catch {
-      return iso;
-    }
+  startEdit(ins: InscripcionAdmin): void {
+    this.editingInscripcion.set(ins);
+    this.editBuffer = { ...ins };
+  }
+
+  cancelEdit(): void {
+    this.editingInscripcion.set(null);
+    this.editBuffer = {};
+  }
+
+  saveEdit(): void {
+    const ins = this.editingInscripcion();
+    if (!ins) return;
+    this.savingEdit.set(true);
+    this.service.actualizar(ins._id, this.editBuffer, this.password).subscribe({
+      next: () => {
+        this.savingEdit.set(false);
+        this.editingInscripcion.set(null);
+        this.inscripciones.update((list) =>
+          list.map((item) =>
+            item._id === ins._id ? { ...item, ...this.editBuffer } : item,
+          ),
+        );
+      },
+      error: () => {
+        this.savingEdit.set(false);
+        alert('Error al guardar cambios');
+      },
+    });
   }
 
   exportToExcel(): void {
@@ -689,61 +696,37 @@ export class AdminComponent {
     if (data.length === 0) return;
 
     const headers = [
-      'Primer Nombre',
-      'Segundo Nombre',
-      'Primer Apellido',
-      'Segundo Apellido',
+      'Nombre',
+      'Apellido',
       'Correo',
       'Tipo Doc',
       'Num Doc',
-      'Fecha Nacimiento',
-      'Género',
-      'EPS',
-      'Contacto Emergencia',
-      'Talla Camiseta',
+      'Telefono',
+      'Ciudad',
+      'Talla',
       'Distancia',
-      'Estado Pago',
-      'Fecha Inscripción',
-      'Código Descuento',
+      'Estado',
     ];
+    const rows = data.map((i) => [
+      i.primerNombre,
+      i.primerApellido,
+      i.correo,
+      i.tipoDocumento,
+      i.numeroDocumento,
+      i.telefono,
+      i.ciudad,
+      i.tallaCamiseta,
+      i.distancia,
+      i.estadoPago,
+    ]);
 
-    const escape = (v: string) => {
-      if (v.includes(',') || v.includes('"') || v.includes('\n')) {
-        return '"' + v.replace(/"/g, '""') + '"';
-      }
-      return v;
-    };
-
-    const rows = data.map((i) =>
-      [
-        i.primerNombre,
-        i.segundoNombre || '',
-        i.primerApellido,
-        i.segundoApellido,
-        i.correo,
-        i.tipoDocumento,
-        i.numeroDocumento,
-        i.fechaNacimiento,
-        i.genero,
-        i.eps,
-        i.contactoEmergencia,
-        i.tallaCamiseta,
-        i.distancia === '10k' ? '10K' : '5K',
-        i.estadoPago === 'aprobado' ? 'Aprobado' : 'Pendiente',
-        this.formatDate(i.fechaInscripcion),
-        i.codigoDescuento || '',
-      ]
-        .map(escape)
-        .join(','),
-    );
-
-    const csv = '\uFEFF' + headers.join(',') + '\n' + rows.join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const csvContent =
+      '\uFEFF' + [headers, ...rows].map((e) => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `inscripciones_santuario_${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'inscripciones.csv';
+    link.click();
   }
 }

@@ -14,6 +14,8 @@ export interface InscripcionPayload {
   genero: string;
   eps: string;
   contactoEmergencia: string;
+  telefono: string;
+  ciudad: string;
   tallaCamiseta: string;
   distancia: string;
   codigoDescuento?: string;
@@ -40,6 +42,8 @@ export interface InscripcionAdmin {
   genero: string;
   eps: string;
   contactoEmergencia: string;
+  telefono: string;
+  ciudad: string;
   tallaCamiseta: string;
   distancia: string;
   estadoPago: string;
@@ -70,11 +74,17 @@ export class InscripcionService {
   }
 
   aprobarPago(id: string, password: string): Observable<{ message: string }> {
-    return this.http.patch<{ message: string }>(
-      `${this.baseUrl}/${id}`,
-      { estadoPago: 'aprobado' },
-      { headers: new HttpHeaders({ 'x-admin-password': password }) },
-    );
+    return this.actualizar(id, { estadoPago: 'aprobado' }, password);
+  }
+
+  actualizar(
+    id: string,
+    data: Partial<InscripcionAdmin>,
+    password: string
+  ): Observable<{ message: string }> {
+    return this.http.patch<{ message: string }>(`${this.baseUrl}/${id}`, data, {
+      headers: new HttpHeaders({ 'x-admin-password': password }),
+    });
   }
 
   eliminar(id: string, password: string): Observable<{ message: string }> {

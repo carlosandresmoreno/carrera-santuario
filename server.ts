@@ -271,12 +271,15 @@ export function app(): express.Express {
         return;
       }
 
+      const { _id, fechaInscripcion, ...updateData } = req.body;
+
       const result = await col.updateOne(
         { _id: new ObjectId(req.params['id']) },
-        { $set: { estadoPago: req.body.estadoPago || 'aprobado' } },
+        { $set: updateData },
       );
 
-      if (req.body.estadoPago === 'aprobado' || !req.body.estadoPago) {
+      // Si se está cambiando el estado a aprobado, enviar correo de confirmación
+      if (req.body.estadoPago === 'aprobado' && inscripcion['estadoPago'] !== 'aprobado') {
         // Enviar correo de confirmación de forma asíncrona
         sendConfirmationEmail(inscripcion);
       }
