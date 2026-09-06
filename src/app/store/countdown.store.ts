@@ -11,7 +11,7 @@ interface CountdownState {
   expired: boolean;
 }
 
-const RACE_DATE = new Date('2026-10-18T07:00:00-05:00');
+const RACE_DATE = new Date('2026-12-06T07:00:00-05:00');
 
 function calculateTimeLeft(): CountdownState {
   const now = new Date();

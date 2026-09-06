@@ -141,7 +141,7 @@ const WHATSAPP_NUMBER = '573116227064';
           >
             5K &amp; 10K en el corazón del Paisaje Cultural Cafetero.<br />
             350 atletas ya vivieron la primera edición. Este
-            <strong>18 de octubre</strong>, la historia se hace más grande.
+            <strong>6 de diciembre</strong>, la historia se hace más grande.
             <strong>¿Vas a estar?</strong>
           </p>
 

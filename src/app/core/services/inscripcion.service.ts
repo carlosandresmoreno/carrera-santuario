@@ -182,7 +182,7 @@ export class InscripcionService {
 
   // ── Email Methods ────────────────────────────────────────────────────────
 
-  private sendRegistrationReceivedEmail(inscripcion: any) {
+  sendRegistrationReceivedEmail(inscripcion: any): Promise<any> {
     const qrUrl = 'https://carrera-santuario-5k-10k.onrender.com/assets/paPagar.png';
     let precioNormal = inscripcion.distancia === '10k' ? 120000 : 105000;
     if (inscripcion.codigoDescuento && inscripcion.codigoDescuento.trim() !== '') {
@@ -197,10 +197,15 @@ export class InscripcionService {
       qrUrl: qrUrl,
     };
 
-    emailjs
+    return emailjs
       .send(this.EMAILJS_SERVICE_ID, this.EMAILJS_TEMPLATE_RECIBIDA, templateParams)
-      .then(() => console.log('✅ Email de registro enviado'))
-      .catch((err) => console.error('❌ Error enviando email:', err));
+      .then(() => {
+        console.log('✅ Email de registro enviado');
+      })
+      .catch((err) => {
+        console.error('❌ Error enviando email:', err);
+        throw err;
+      });
   }
 
   private sendConfirmationEmail(inscripcion: any) {

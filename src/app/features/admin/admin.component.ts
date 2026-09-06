@@ -63,6 +63,18 @@ import {
             </div>
             <div class="admin-actions">
               <button
+                class="email-mass-btn"
+                (click)="enviarRecordatorioMasivo()"
+                [disabled]="sendingMassEmail() || countPendientes() === 0"
+                title="Enviar correo de recordatorio a todas las personas pendientes de pago"
+              >
+                @if (sendingMassEmail()) {
+                  Enviando ({{ massEmailProgress() }})...
+                } @else {
+                  📧 Recordar Pendientes ({{ countPendientes() }})
+                }
+              </button>
+              <button
                 class="export-btn"
                 (click)="exportToExcel()"
                 [disabled]="inscripciones().length === 0"
@@ -94,9 +106,17 @@ import {
               class="filter-select"
               aria-label="Filtrar por estado"
             >
-              <option value="todos">Todos</option>
+              <option value="todos">Todos los Estados</option>
               <option value="pendiente">Pendientes</option>
               <option value="aprobado">Aprobados</option>
+            </select>
+            <select
+              [(ngModel)]="sortOrder"
+              class="filter-select"
+              aria-label="Ordenar por fecha"
+            >
+              <option value="desc">📅 Recientes primero (Desc)</option>
+              <option value="asc">📅 Antiguas primero (Asc)</option>
             </select>
           </div>
 
@@ -112,6 +132,9 @@ import {
                   <tr>
                     <th>#</th>
                     <th>Nombre</th>
+                    <th (click)="toggleSort()" class="sortable-header" title="Clic para alternar orden ascendente/descendente">
+                      Fecha {{ sortOrder === 'desc' ? '⬇️' : '⬆️' }}
+                    </th>
                     <th>Documento</th>
                     <th>Telefono</th>
                     <th>Ciudad</th>
@@ -136,6 +159,7 @@ import {
                         {{ ins.primerNombre }} {{ ins.segundoNombre || '' }}
                         {{ ins.primerApellido }} {{ ins.segundoApellido }}
                       </td>
+                      <td class="date-cell">{{ formatDate(ins.fechaInscripcion) }}</td>
                       <td>{{ ins.tipoDocumento }} {{ ins.numeroDocumento }}</td>
                       <td>{{ ins.telefono }}</td>
                       <td>{{ ins.ciudad }}</td>
@@ -173,6 +197,26 @@ import {
                       </td>
                       <td>
                         <div class="action-buttons">
+                          <a
+                            [href]="getWhatsAppUrl(ins.telefono, ins.primerNombre)"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="whatsapp-btn"
+                            title="Chat de WhatsApp"
+                          >
+                            <svg
+                              width="13"
+                              height="13"
+                              viewBox="0 0 24 24"
+                              fill="currentColor"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                              />
+                            </svg>
+                            WhatsApp
+                          </a>
                           <button
                             class="edit-btn"
                             (click)="startEdit(ins)"
@@ -182,6 +226,18 @@ import {
                           </button>
 
                           @if (ins.estadoPago !== 'aprobado') {
+                            <button
+                              class="reminder-btn"
+                              (click)="enviarRecordatorioIndividual(ins)"
+                              [disabled]="sendingSingleEmailId() === ins.id"
+                              title="Enviar correo de recordatorio a este usuario"
+                            >
+                              {{
+                                sendingSingleEmailId() === ins.id
+                                  ? 'Wait...'
+                                  : '📧 Recordar'
+                              }}
+                            </button>
                             <button
                               class="approve-btn"
                               (click)="aprobarPago(ins.id)"
@@ -465,18 +521,80 @@ import {
         color: #f4a261;
       }
 
+      .sortable-header {
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.2s ease;
+      }
+      .sortable-header:hover {
+        color: var(--color-accent);
+      }
+      .date-cell {
+        font-size: 0.75rem;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+      }
+
       .action-buttons {
         display: flex;
+        align-items: center;
         gap: 0.5rem;
       }
       .edit-btn,
       .approve-btn,
-      .delete-btn {
+      .delete-btn,
+      .whatsapp-btn,
+      .reminder-btn {
         padding: 0.4rem 0.75rem;
         border-radius: var(--radius-sm);
         font-size: 0.75rem;
         font-weight: 600;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        text-decoration: none;
+      }
+      .email-mass-btn {
+        background: rgba(244, 162, 97, 0.2);
+        color: #f4a261;
+        border: 1px solid rgba(244, 162, 97, 0.4);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+      .email-mass-btn:hover:not(:disabled) {
+        background: rgba(244, 162, 97, 0.35);
+        border-color: #f4a261;
+      }
+      .email-mass-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .reminder-btn {
+        background: rgba(244, 162, 97, 0.15);
+        color: #f4a261;
+        border: 1px solid rgba(244, 162, 97, 0.3);
+      }
+      .reminder-btn:hover:not(:disabled) {
+        background: rgba(244, 162, 97, 0.3);
+      }
+      .reminder-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .whatsapp-btn {
+        background: #25d366;
+        color: white;
+        border: none;
+        transition: background 0.2s ease, transform 0.15s ease;
+      }
+      .whatsapp-btn:hover {
+        background: #20ba5a;
+        transform: translateY(-1px);
       }
       .edit-btn {
         background: rgba(255, 255, 255, 0.1);
@@ -566,6 +684,7 @@ export class AdminComponent {
   password = '';
   filterText = '';
   filterStatus = 'todos';
+  sortOrder: 'desc' | 'asc' = 'desc';
 
   readonly authenticated = signal(false);
   readonly loggingIn = signal(false);
@@ -574,6 +693,9 @@ export class AdminComponent {
   readonly inscripciones = signal<InscripcionAdmin[]>([]);
   readonly approvingId = signal<string | null>(null);
   readonly deletingId = signal<string | null>(null);
+  readonly sendingSingleEmailId = signal<string | null>(null);
+  readonly sendingMassEmail = signal(false);
+  readonly massEmailProgress = signal('');
 
   readonly editingInscripcion = signal<InscripcionAdmin | null>(null);
   readonly savingEdit = signal(false);
@@ -624,12 +746,124 @@ export class AdminComponent {
           i.numeroDocumento.includes(q),
       );
     }
-    return list;
+
+    return [...list].sort((a, b) => {
+      const dateA = a.fechaInscripcion ? new Date(a.fechaInscripcion).getTime() : 0;
+      const dateB = b.fechaInscripcion ? new Date(b.fechaInscripcion).getTime() : 0;
+      return this.sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+  }
+
+  toggleSort(): void {
+    this.sortOrder = this.sortOrder === 'desc' ? 'asc' : 'desc';
+  }
+
+  formatDate(dateStr?: string): string {
+    if (!dateStr) return 'N/A';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    return d.toLocaleString('es-CO', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
   }
 
   countAprobados(): number {
     return this.inscripciones().filter((i) => i.estadoPago === 'aprobado')
       .length;
+  }
+
+  countPendientes(): number {
+    return this.inscripciones().filter((i) => i.estadoPago !== 'aprobado').length;
+  }
+
+  async enviarRecordatorioIndividual(ins: InscripcionAdmin): Promise<void> {
+    if (!ins.correo) {
+      alert('El usuario no tiene un correo registrado.');
+      return;
+    }
+    if (
+      !confirm(
+        `¿Deseas enviar el correo de recordatorio de pago a ${ins.primerNombre} ${ins.primerApellido} (${ins.correo})?`,
+      )
+    ) {
+      return;
+    }
+
+    this.sendingSingleEmailId.set(ins.id);
+    try {
+      await this.service.sendRegistrationReceivedEmail(ins);
+      alert(`✅ Correo de recordatorio enviado a ${ins.primerNombre}.`);
+    } catch (error) {
+      console.error('Error enviando correo individual:', error);
+      alert('❌ Error al enviar el correo.');
+    } finally {
+      this.sendingSingleEmailId.set(null);
+    }
+  }
+
+  async enviarRecordatorioMasivo(): Promise<void> {
+    const pendientes = this.inscripciones().filter(
+      (i) => i.estadoPago !== 'aprobado',
+    );
+    if (pendientes.length === 0) {
+      alert('No hay personas con inscripción pendiente.');
+      return;
+    }
+
+    if (
+      !confirm(
+        `¿Estás seguro de enviar el correo de recordatorio de pago a las ${pendientes.length} personas pendientes?`,
+      )
+    ) {
+      return;
+    }
+
+    this.sendingMassEmail.set(true);
+    let enviados = 0;
+    let fallidos = 0;
+
+    for (let i = 0; i < pendientes.length; i++) {
+      const ins = pendientes[i];
+      this.massEmailProgress.set(`${i + 1}/${pendientes.length}`);
+      try {
+        await this.service.sendRegistrationReceivedEmail(ins);
+        enviados++;
+      } catch (err) {
+        console.error(`Error enviando correo a ${ins.correo}:`, err);
+        fallidos++;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
+    this.sendingMassEmail.set(false);
+    this.massEmailProgress.set('');
+
+    if (fallidos === 0) {
+      alert(
+        `✅ Correos de recordatorio enviados exitosamente a las ${enviados} personas pendientes.`,
+      );
+    } else {
+      alert(
+        `⚠️ Proceso completado: ${enviados} correos enviados con éxito, ${fallidos} fallidos.`,
+      );
+    }
+  }
+
+  getWhatsAppUrl(telefono: string, nombre?: string): string {
+    if (!telefono) return '#';
+    let cleanNumber = telefono.replace(/\D/g, '');
+    if (!cleanNumber.startsWith('57') && cleanNumber.length === 10) {
+      cleanNumber = '57' + cleanNumber;
+    }
+    const text = encodeURIComponent(
+      `Hola ${nombre || ''}, te contacto respecto a tu inscripción en Santuario Corre 2026.`,
+    );
+    return `https://wa.me/${cleanNumber}?text=${text}`;
   }
 
   aprobarPago(id: string): void {
@@ -696,6 +930,7 @@ export class AdminComponent {
     if (data.length === 0) return;
 
     const headers = [
+      'Fecha Registro',
       'Nombre',
       'Apellido',
       'Correo',
@@ -708,6 +943,7 @@ export class AdminComponent {
       'Estado',
     ];
     const rows = data.map((i) => [
+      this.formatDate(i.fechaInscripcion),
       i.primerNombre,
       i.primerApellido,
       i.correo,

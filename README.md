@@ -21,8 +21,8 @@ Para correr la aplicación con todas sus funcionalidades (incluyendo la API y el
 # Construir el proyecto
 ng build
 
-# Ejecutar el servidor SSR localmente
-npm run serve:ssr:carrera-santuario
+# Ejecutar el proyecto
+npm serve
 ```
 
 La aplicación estará disponible en `http://localhost:4000`.
@@ -31,4 +31,5 @@ La aplicación estará disponible en `http://localhost:4000`.
 
 - `ng serve`: Lanza el servidor de desarrollo de Angular (solo frontend, sin SSR/API completa).
 - `ng build`: Compila la aplicación para producción.
-- `npm run serve:ssr:carrera-santuario`: Inicia el servidor SSR en el puerto 4000.
+
+integrado con firebase

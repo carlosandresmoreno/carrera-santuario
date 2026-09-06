@@ -7,7 +7,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { SafeResourcePipe } from '../../core/pipes/safe-resource.pipe';
 
-const INSTAGRAM_HANDLE = 'santuariocorre5ky10k';
+const INSTAGRAM_HANDLE = 'santuariocorre2026';
 const INSTAGRAM_PROFILE = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`;
 const INSTAGRAM_EMBED = `https://www.instagram.com/${INSTAGRAM_HANDLE}/embed/`;
 

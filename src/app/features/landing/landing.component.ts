@@ -135,7 +135,7 @@ export class LandingComponent {
       const TITLE =
         'Santuario Corre 5K & 10K 2026 – Segunda Edición | Bosque Campista Tamaná';
       const DESC =
-        'Corre 5K o 10K en Santuario, Risaralda el 18 de octubre de 2026. Organizado por jóvenes del Bosque Campista Tamaná en el Paisaje Cultural Cafetero. ¡Inscripciones abiertas desde $85.000 COP!';
+        'Corre 5K o 10K en Santuario, Risaralda el 6 de diciembre de 2026. Organizado por jóvenes del Bosque Campista Tamaná en el Paisaje Cultural Cafetero. ¡Inscripciones abiertas desde $85.000 COP!';
 
       this.seo.updateMeta({
         title: TITLE,

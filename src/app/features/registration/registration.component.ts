@@ -61,7 +61,7 @@ const WHATSAPP_NUMBER = '573116227064';
               y asegura tu kit de corredor. 🎽
             } @else {
               3 pasos y estarás en la línea de salida: elige tu distancia, llena
-              el formulario y <strong>¡nos vemos el 18 de octubre!</strong>
+              el formulario y <strong>¡nos vemos el 6 de diciembre!</strong>
             }
           </p>
 
@@ -203,7 +203,7 @@ const WHATSAPP_NUMBER = '573116227064';
             <dl class="info-list">
               <div class="info-row">
                 <dt>Fecha</dt>
-                <dd>18 de Octubre, 2026 📅</dd>
+                <dd>6 de Diciembre, 2026 📅</dd>
               </div>
               <div class="info-row">
                 <dt>Organiza</dt>

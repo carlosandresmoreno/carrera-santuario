@@ -63,7 +63,7 @@ export class SeoService {
     });
     this.meta.updateTag({
       name: 'twitter:site',
-      content: '@santuariocorre5ky10k',
+      content: '@santuariocorre2026',
     });
     this.meta.updateTag({ name: 'twitter:title', content: config.title });
     this.meta.updateTag({
@@ -133,8 +133,8 @@ export class SeoService {
           description:
             'Carrera atlética 5K recreativa y 10K competitiva por el Paisaje Cultural Cafetero de Risaralda. Organizada por jóvenes voluntarios del Bosque Campista Tamaná.',
           url: SITE_URL + '/',
-          startDate: '2026-10-18T07:00:00-05:00',
-          endDate: '2026-10-18T13:00:00-05:00',
+          startDate: '2026-12-06T07:00:00-05:00',
+          endDate: '2026-12-06T13:00:00-05:00',
           eventStatus: 'https://schema.org/EventScheduled',
           eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
           sport: 'Running',
@@ -168,7 +168,7 @@ export class SeoService {
               priceCurrency: 'COP',
               availability: 'https://schema.org/InStock',
               validFrom: '2026-03-01',
-              validThrough: '2026-10-10',
+              validThrough: '2026-12-06',
               url: FORM_URL,
             },
             {
@@ -178,7 +178,7 @@ export class SeoService {
               priceCurrency: 'COP',
               availability: 'https://schema.org/InStock',
               validFrom: '2026-03-01',
-              validThrough: '2026-10-10',
+              validThrough: '2026-12-06',
               url: FORM_URL,
             },
           ],

@@ -40,20 +40,11 @@ export const PRICE_STAGES: PriceStage[] = [
   {
     name: 'Valientes',
     emoji: '💪',
-    dateRange: '1 Abr – 31 Ago',
+    dateRange: '1 Abr – 6 Dic',
     price5k: 105_000,
     price10k: 120_000,
     startDate: new Date('2026-04-01'),
-    endDate: new Date('2026-08-31T23:59:59'),
-  },
-  {
-    name: 'Gladiadores',
-    emoji: '⚔️',
-    dateRange: '1 Sep – 30 Sep',
-    price5k: 125_000,
-    price10k: 145_000,
-    startDate: new Date('2026-09-01'),
-    endDate: new Date('2026-09-30T23:59:59'),
+    endDate: new Date('2026-12-06T23:59:59'),
   },
 ];
 
