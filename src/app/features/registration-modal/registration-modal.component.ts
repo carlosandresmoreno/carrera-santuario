@@ -297,10 +297,26 @@ interface ModalData {
             <div class="success-steps">
               <h3>Solo resta un paso:</h3>
               <ol>
-                <li>Realiza el pago segun la distancia</li>
-                <li>Envia el comprobante al WhatsApp: 311 622 7064</li>
-                <li>Recibiras confirmacion pronto</li>
+                <li>Realiza el pago según la distancia</li>
+                <li>Envía el comprobante al WhatsApp: <strong>311 622 7064</strong></li>
+                <li>Recibirás confirmación pronto</li>
               </ol>
+
+              <div class="payment-qr" style="text-align: center; margin-top: 1.5rem;">
+                <p style="font-size: 0.85rem; font-weight: 700; color: var(--color-text-primary); margin-bottom: 0.75rem;">
+                  Puedes pagar escaneando este QR:
+                </p>
+                <div style="background: white; padding: 0.75rem; display: inline-flex; flex-direction: column; align-items: center; gap: 0.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-soft);">
+                  <img
+                    src="assets/paPagar.png"
+                    alt="QR de pago"
+                    style="width: 160px; height: 160px; object-fit: contain;"
+                  />
+                  <p style="font-size: 0.75rem; color: #64748b; font-weight: 600; margin: 0;">
+                    Bancolombia / Nequi / Ahorro a la mano
+                  </p>
+                </div>
+              </div>
             </div>
             <button class="submit-btn" (click)="close()">Entendido</button>
           </div>
@@ -335,24 +351,34 @@ interface ModalData {
         top: 1rem;
         right: 1rem;
         background: transparent;
-        color: white;
+        color: var(--color-text-primary);
         border: none;
         cursor: pointer;
         font-size: 1.5rem;
+        font-weight: 700;
       }
       .modal-header { margin-bottom: 2rem; }
       .modal-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
       .modal-subtitle { color: var(--color-text-secondary); font-size: 0.9rem; }
       .modal-form { display: flex; flex-direction: column; gap: 1rem; }
-      .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+      @media (max-width: 500px) {
+        .form-row { grid-template-columns: 1fr; }
+        .modal-container { padding: 1.5rem; }
+      }
       .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
       .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--color-text-secondary); }
       .form-group input, .form-group select {
         padding: 0.75rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid var(--color-border);
+        background: #ffffff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
         border-radius: var(--radius-sm);
-        color: white;
+        color: var(--color-text-primary);
+        font-size: 1rem;
       }
       .distance-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
       .distance-option {
@@ -418,7 +444,16 @@ export class RegistrationModalComponent {
   }
 
   onSubmit(): void {
+    console.log('📝 Form submit triggered');
     if (this.form.invalid) {
+      console.warn('❌ Form is invalid:', this.form.errors);
+      // Log individual field errors to see which one is failing
+      Object.keys(this.form.controls).forEach(key => {
+        const controlErrors = this.form.get(key)?.errors;
+        if (controlErrors != null) {
+          console.warn(`Field ${key} errors:`, controlErrors);
+        }
+      });
       this.form.markAllAsTouched();
       return;
     }
@@ -426,14 +461,18 @@ export class RegistrationModalComponent {
     this.submitting.set(true);
     this.errorMsg.set('');
 
+    console.log('🚀 Sending data to service:', this.form.getRawValue());
     this.inscripcionService.crear(this.form.getRawValue()).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log('✅ Registration success:', res);
         this.submitting.set(false);
         this.success.set(true);
       },
       error: (err) => {
+        console.error('❌ Registration error:', err);
         this.submitting.set(false);
-        this.errorMsg.set(err.error?.error || 'Error al registrar. Intenta de nuevo.');
+        const msg = (typeof err.error === 'string' ? err.error : err.error?.error) || err.message || 'Error al registrar. Intenta de nuevo.';
+        this.errorMsg.set(msg);
       },
     });
   }

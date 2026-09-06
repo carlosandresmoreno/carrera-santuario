@@ -111,7 +111,7 @@ import {
                     <p class="qr-label">Puedes pagar escaneando este QR:</p>
                     <div class="qr-container">
                       <img
-                        src="/assets/paPagar.png"
+                        src="assets/paPagar.png"
                         alt="QR de pago"
                         class="qr-img"
                       />
@@ -361,9 +361,8 @@ export class StatusCheckComponent {
       },
       error: (err) => {
         this.loading.set(false);
-        this.errorMsg.set(
-          err.error?.error || 'No se encontró inscripción con ese documento',
-        );
+        const msg = (typeof err.error === 'string' ? err.error : err.error?.error) || err.message || 'No se encontró inscripción con ese documento';
+        this.errorMsg.set(msg);
       },
     });
   }

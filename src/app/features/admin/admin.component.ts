@@ -125,11 +125,11 @@ import {
                   </tr>
                 </thead>
                 <tbody>
-                  @for (
-                    ins of filteredInscripciones();
-                    track ins._id;
-                    let i = $index
-                  ) {
+                    @for (
+                      ins of filteredInscripciones();
+                      track ins.id;
+                      let i = $index
+                    ) {
                     <tr [class.row-approved]="ins.estadoPago === 'aprobado'">
                       <td>{{ i + 1 }}</td>
                       <td class="name-cell">
@@ -184,11 +184,11 @@ import {
                           @if (ins.estadoPago !== 'aprobado') {
                             <button
                               class="approve-btn"
-                              (click)="aprobarPago(ins._id)"
-                              [disabled]="approvingId() === ins._id"
+                              (click)="aprobarPago(ins.id)"
+                              [disabled]="approvingId() === ins.id"
                             >
                               {{
-                                approvingId() === ins._id
+                                approvingId() === ins.id
                                   ? 'Wait...'
                                   : 'Aprobar'
                               }}
@@ -199,14 +199,14 @@ import {
                             class="delete-btn"
                             (click)="
                               eliminarInscripcion(
-                                ins._id,
+                                ins.id,
                                 ins.primerNombre + ' ' + ins.primerApellido
                               )
                             "
-                            [disabled]="deletingId() === ins._id"
+                            [disabled]="deletingId() === ins.id"
                             title="Eliminar"
                           >
-                            {{ deletingId() === ins._id ? 'Wait' : 'Del' }}
+                            {{ deletingId() === ins.id ? 'Wait' : 'Del' }}
                           </button>
                         </div>
                       </td>
@@ -639,7 +639,7 @@ export class AdminComponent {
         this.approvingId.set(null);
         this.inscripciones.update((list) =>
           list.map((i) =>
-            i._id === id ? { ...i, estadoPago: 'aprobado' } : i,
+            i.id === id ? { ...i, estadoPago: 'aprobado' } : i,
           ),
         );
       },
@@ -654,7 +654,7 @@ export class AdminComponent {
     this.service.eliminar(id, this.password).subscribe({
       next: () => {
         this.deletingId.set(null);
-        this.inscripciones.update((list) => list.filter((i) => i._id !== id));
+        this.inscripciones.update((list) => list.filter((i) => i.id !== id));
       },
       error: () => this.deletingId.set(null),
     });
@@ -674,13 +674,13 @@ export class AdminComponent {
     const ins = this.editingInscripcion();
     if (!ins) return;
     this.savingEdit.set(true);
-    this.service.actualizar(ins._id, this.editBuffer, this.password).subscribe({
+    this.service.actualizar(ins.id, this.editBuffer, this.password).subscribe({
       next: () => {
         this.savingEdit.set(false);
         this.editingInscripcion.set(null);
         this.inscripciones.update((list) =>
           list.map((item) =>
-            item._id === ins._id ? { ...item, ...this.editBuffer } : item,
+            item.id === ins.id ? { ...item, ...this.editBuffer } : item,
           ),
         );
       },
