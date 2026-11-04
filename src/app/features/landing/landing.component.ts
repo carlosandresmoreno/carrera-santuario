@@ -140,8 +140,8 @@ export class LandingComponent {
       this.seo.updateMeta({
         title: TITLE,
         description: DESC,
-        image: 'https://carrera-santuario-5k-10k.onrender.com/assets/og-image.jpg',
-        url: 'https://carrera-santuario-5k-10k.onrender.com/',
+        image: 'https://santuario-corre-5k.web.app/assets/og-image.jpg',
+        url: 'https://santuario-corre-5k.web.app/',
         keywords:
           'santuario corre, carrera santuario 2026, 5k risaralda, 10k risaralda, ' +
           'atletismo eje cafetero, bosque campista tamana, carrera atletica colombia, ' +

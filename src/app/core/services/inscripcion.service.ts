@@ -183,7 +183,7 @@ export class InscripcionService {
   // ── Email Methods ────────────────────────────────────────────────────────
 
   sendRegistrationReceivedEmail(inscripcion: any): Promise<any> {
-    const qrUrl = 'https://carrera-santuario-5k-10k.onrender.com/assets/paPagar.png';
+    const qrUrl = 'https://santuario-corre-5k.web.app/assets/paPagar.png';
     let precioNormal = inscripcion.distancia === '10k' ? 120000 : 105000;
     if (inscripcion.codigoDescuento && inscripcion.codigoDescuento.trim() !== '') {
       precioNormal = precioNormal * 0.85;

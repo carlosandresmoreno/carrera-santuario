@@ -2,7 +2,8 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://carrera-santuario-5k-10k.onrender.com/sitemap.xml
+Sitemap: https://santuario-corre-5k.web.app/sitemap.xml
 
 # Block irrelevant paths
+Disallow: /admin
 Disallow: /assets/hero-video.mp4
