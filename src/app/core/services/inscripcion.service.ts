@@ -14,6 +14,7 @@ import {
 } from '@angular/fire/firestore';
 import { from, Observable, map, switchMap, of, throwError } from 'rxjs';
 import emailjs from '@emailjs/browser';
+import { calculatePrice } from '../constants/discount-codes';
 
 export interface InscripcionPayload {
   correo: string;
@@ -184,11 +185,8 @@ export class InscripcionService {
 
   sendRegistrationReceivedEmail(inscripcion: any): Promise<any> {
     const qrUrl = 'https://santuario-corre-5k.web.app/assets/paPagar.png';
-    let precioNormal = inscripcion.distancia === '10k' ? 120000 : 105000;
-    if (inscripcion.codigoDescuento && inscripcion.codigoDescuento.trim() !== '') {
-      precioNormal = precioNormal * 0.85;
-    }
-    const precioFormateado = precioNormal.toLocaleString('es-CO');
+    const { finalPrice } = calculatePrice(inscripcion.distancia, inscripcion.codigoDescuento);
+    const precioFormateado = finalPrice.toLocaleString('es-CO');
 
     const templateParams = {
       to_email: inscripcion.correo,

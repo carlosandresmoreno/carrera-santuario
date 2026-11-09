@@ -161,7 +161,14 @@ import {
                       </td>
                       <td class="date-cell">{{ formatDate(ins.fechaInscripcion) }}</td>
                       <td>{{ ins.tipoDocumento }} {{ ins.numeroDocumento }}</td>
-                      <td>{{ ins.telefono }}</td>
+                      <td>
+                        <div>{{ ins.telefono }}</div>
+                        @if (ins.contactoEmergencia) {
+                          <div class="emergency-contact-text" title="Contacto de emergencia">
+                            🚨 Emerg: {{ ins.contactoEmergencia }}
+                          </div>
+                        }
+                      </td>
                       <td>{{ ins.ciudad }}</td>
                       <td>
                         <span
@@ -291,16 +298,54 @@ import {
                     <input [(ngModel)]="editBuffer.primerNombre" />
                   </div>
                   <div class="edit-group">
+                    <label>Segundo Nombre</label>
+                    <input [(ngModel)]="editBuffer.segundoNombre" />
+                  </div>
+                  <div class="edit-group">
                     <label>Primer Apellido</label>
                     <input [(ngModel)]="editBuffer.primerApellido" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Segundo Apellido</label>
+                    <input [(ngModel)]="editBuffer.segundoApellido" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="date" [(ngModel)]="editBuffer.fechaNacimiento" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Genero</label>
+                    <select [(ngModel)]="editBuffer.genero">
+                      <option value="Masculino">Masculino</option>
+                      <option value="Femenino">Femenino</option>
+                      <option value="Prefiero no decirlo">Prefiero no decirlo</option>
+                    </select>
+                  </div>
+                  <div class="edit-group">
+                    <label>Tipo Documento</label>
+                    <select [(ngModel)]="editBuffer.tipoDocumento">
+                      <option value="CC">Cedula de ciudadania</option>
+                      <option value="TI">Tarjeta de identidad</option>
+                      <option value="CE">Cedula de extranjeria</option>
+                      <option value="PA">Pasaporte</option>
+                      <option value="Otro">Otro</option>
+                    </select>
                   </div>
                   <div class="edit-group">
                     <label>Num Doc</label>
                     <input [(ngModel)]="editBuffer.numeroDocumento" />
                   </div>
                   <div class="edit-group">
-                    <label>Telefono</label>
+                    <label>Telefono Personal</label>
                     <input [(ngModel)]="editBuffer.telefono" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Telefono Emergencia</label>
+                    <input [(ngModel)]="editBuffer.contactoEmergencia" />
+                  </div>
+                  <div class="edit-group">
+                    <label>Correo</label>
+                    <input [(ngModel)]="editBuffer.correo" />
                   </div>
                   <div class="edit-group">
                     <label>Ciudad</label>
@@ -326,6 +371,10 @@ import {
                       <option value="5k">5K</option>
                       <option value="10k">10K</option>
                     </select>
+                  </div>
+                  <div class="edit-group">
+                    <label>Codigo Descuento</label>
+                    <input [(ngModel)]="editBuffer.codigoDescuento" />
                   </div>
                 </div>
 
@@ -625,9 +674,17 @@ import {
       }
       .modal-container {
         width: 100%;
-        max-width: 600px;
+        max-width: 650px;
+        max-height: 90vh;
+        overflow-y: auto;
         padding: 2rem;
         border: 1px solid var(--color-border);
+      }
+      .emergency-contact-text {
+        font-size: 0.72rem;
+        color: #f59e0b;
+        margin-top: 2px;
+        white-space: nowrap;
       }
       .edit-grid {
         display: grid;
@@ -931,33 +988,53 @@ export class AdminComponent {
 
     const headers = [
       'Fecha Registro',
-      'Nombre',
-      'Apellido',
-      'Correo',
+      'Primer Nombre',
+      'Segundo Nombre',
+      'Primer Apellido',
+      'Segundo Apellido',
+      'Fecha Nacimiento',
+      'Genero',
       'Tipo Doc',
       'Num Doc',
-      'Telefono',
+      'Telefono Personal',
+      'Telefono Emergencia',
+      'Correo',
+      'EPS',
       'Ciudad',
       'Talla',
       'Distancia',
-      'Estado',
+      'Codigo Descuento',
+      'Estado Pago',
     ];
     const rows = data.map((i) => [
       this.formatDate(i.fechaInscripcion),
-      i.primerNombre,
-      i.primerApellido,
-      i.correo,
-      i.tipoDocumento,
-      i.numeroDocumento,
-      i.telefono,
-      i.ciudad,
-      i.tallaCamiseta,
-      i.distancia,
-      i.estadoPago,
+      i.primerNombre || '',
+      i.segundoNombre || '',
+      i.primerApellido || '',
+      i.segundoApellido || '',
+      i.fechaNacimiento || '',
+      i.genero || '',
+      i.tipoDocumento || '',
+      i.numeroDocumento || '',
+      i.telefono || '',
+      i.contactoEmergencia || '',
+      i.correo || '',
+      i.eps || '',
+      i.ciudad || '',
+      i.tallaCamiseta || '',
+      i.distancia || '',
+      i.codigoDescuento || '',
+      i.estadoPago || '',
     ]);
 
+    const escapeCell = (val: any) =>
+      `"${String(val ?? '').replace(/"/g, '""')}"`;
+
     const csvContent =
-      '\uFEFF' + [headers, ...rows].map((e) => e.join(',')).join('\n');
+      '\uFEFF' +
+      [headers, ...rows]
+        .map((row) => row.map(escapeCell).join(','))
+        .join('\r\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

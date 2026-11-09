@@ -33,3 +33,5 @@ La aplicación estará disponible en `http://localhost:4000`.
 - `ng build`: Compila la aplicación para producción.
 
 integrado con firebase
+
+firebase deploy --only hosting

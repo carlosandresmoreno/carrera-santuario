@@ -10,6 +10,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { InscripcionService } from '../../core/services/inscripcion.service';
+import { calculatePrice } from '../../core/constants/discount-codes';
 
 interface ModalData {
   distancia: string | null;
@@ -269,14 +270,60 @@ interface ModalData {
               </select>
             </div>
 
+            <!-- Codigo de Descuento -->
             <div class="form-group">
-              <label for="codigoDescuento">Codigo de descuento (opcional)</label>
+              <label for="codigoDescuento">
+                Codigo de descuento (opcional)
+                <span class="discount-label-hint">Si tienes un cupón promocional, ingrésalo aquí</span>
+              </label>
               <input
                 id="codigoDescuento"
                 type="text"
                 formControlName="codigoDescuento"
-                placeholder="Codigo"
+                placeholder="Ej: BTXESTE"
+                style="text-transform: uppercase;"
               />
+
+              @if (form.get('codigoDescuento')?.value?.trim()) {
+                @if (priceInfo().hasDiscount) {
+                  <div class="discount-status success">
+                    <span class="status-icon">🎉</span>
+                    <div class="status-content">
+                      <strong>¡Código {{ priceInfo().cleanCode }} aplicado!</strong>
+                      <span>Descuento del 15% aplicado con éxito. Ahorras $ {{ priceInfo().discount | number:'1.0-0' }} COP.</span>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="discount-status invalid">
+                    <span class="status-icon">⚠️</span>
+                    <div class="status-content">
+                      <span>Código inválido o expirado. Verifica que esté bien escrito.</span>
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+
+            <!-- Resumen de Valor a Pagar -->
+            <div class="price-breakdown-card">
+              <div class="price-row">
+                <span>Inscripción {{ form.get('distancia')?.value === '10k' ? '10K Competitiva' : '5K Recreativa' }}</span>
+                <span [class.struck-price]="priceInfo().hasDiscount">
+                  $ {{ priceInfo().basePrice | number:'1.0-0' }} COP
+                </span>
+              </div>
+
+              @if (priceInfo().hasDiscount) {
+                <div class="price-row discount-applied-row">
+                  <span>Descuento especial (15%)</span>
+                  <span class="discount-val">- $ {{ priceInfo().discount | number:'1.0-0' }} COP</span>
+                </div>
+              }
+
+              <div class="price-row total-row">
+                <strong>Total a transferir:</strong>
+                <strong class="total-price">$ {{ priceInfo().finalPrice | number:'1.0-0' }} COP</strong>
+              </div>
             </div>
 
             @if (errorMsg()) {
@@ -290,14 +337,29 @@ interface ModalData {
         } @else {
           <!-- Success state -->
           <div class="success-state">
-            <h2 class="success-title">Ya te inscribiste!</h2>
+            <h2 class="success-title">¡Ya te inscribiste! 🎉</h2>
             <p class="success-text">
-              Tu inscripcion ha sido registrada exitosamente.
+              Tu inscripción ha sido registrada exitosamente.
             </p>
             <div class="success-steps">
-              <h3>Solo resta un paso:</h3>
+              <!-- Destacado del monto exacto a pagar -->
+              <div class="amount-to-pay-box">
+                <span class="amount-label">Monto exacto a transferir:</span>
+                <div class="amount-val">
+                  $ {{ priceInfo().finalPrice | number:'1.0-0' }} COP
+                </div>
+                @if (priceInfo().hasDiscount) {
+                  <div class="amount-discount-tag">
+                    🎉 ¡Incluye 15% de descuento por código <strong>{{ priceInfo().cleanCode }}</strong>!
+                  </div>
+                }
+              </div>
+
+              <h3>Solo resta un paso para asegurar tu cupo:</h3>
               <ol>
-                <li>Realiza el pago según la distancia</li>
+                <li>
+                  Realiza la transferencia de <strong>$ {{ priceInfo().finalPrice | number:'1.0-0' }} COP</strong>
+                </li>
                 <li>Envía el comprobante al WhatsApp: <strong>311 622 7064</strong></li>
                 <li>Recibirás confirmación pronto</li>
               </ol>
@@ -403,7 +465,115 @@ interface ModalData {
       .error { color: #ef4444; font-size: 0.75rem; }
       .alert-error { padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; border-radius: var(--radius-sm); }
       .success-state { text-align: center; }
-      .success-steps { text-align: left; background: rgba(255,255,255,0.05); padding: 1.5rem; margin: 2rem 0; border-radius: var(--radius-sm); }
+      .success-steps { text-align: left; background: rgba(255,255,255,0.05); padding: 1.5rem; margin: 1.5rem 0; border-radius: var(--radius-sm); }
+
+      /* Discount styling */
+      .discount-label-hint {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--color-text-secondary);
+        font-weight: 400;
+        margin-top: 0.15rem;
+      }
+      .discount-status {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.6rem;
+        margin-top: 0.6rem;
+        padding: 0.7rem 0.9rem;
+        border-radius: var(--radius-sm, 6px);
+        font-size: 0.82rem;
+        line-height: 1.4;
+      }
+      .discount-status.success {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.35);
+        color: #22c55e;
+      }
+      .discount-status.invalid {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #ef4444;
+      }
+      .discount-status .status-icon {
+        font-size: 1.1rem;
+      }
+      .discount-status .status-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+      }
+
+      /* Price Breakdown Card */
+      .price-breakdown-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md, 8px);
+        padding: 1rem 1.25rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.88rem;
+        color: var(--color-text-secondary);
+      }
+      .struck-price {
+        text-decoration: line-through;
+        opacity: 0.55;
+      }
+      .discount-applied-row {
+        color: #22c55e;
+        font-weight: 600;
+      }
+      .discount-val {
+        font-weight: 700;
+      }
+      .price-row.total-row {
+        border-top: 1px dashed var(--color-border);
+        padding-top: 0.6rem;
+        margin-top: 0.25rem;
+        font-size: 1.05rem;
+        color: var(--color-text-primary);
+      }
+      .total-price {
+        color: var(--color-accent, #3b82f6);
+        font-size: 1.2rem;
+        font-weight: 800;
+      }
+
+      /* Success Amount Box */
+      .amount-to-pay-box {
+        background: rgba(37, 99, 235, 0.1);
+        border: 1px solid rgba(37, 99, 235, 0.35);
+        border-radius: var(--radius-md, 8px);
+        padding: 1.25rem 1rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      .amount-label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-secondary);
+        font-weight: 700;
+      }
+      .amount-val {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #38bdf8;
+        margin: 0.35rem 0;
+      }
+      .amount-discount-tag {
+        font-size: 0.85rem;
+        color: #22c55e;
+        font-weight: 600;
+      }
     `,
   ],
 })
@@ -439,6 +609,18 @@ export class RegistrationModalComponent {
     codigoDescuento: [''],
   });
 
+  readonly priceInfo = signal(
+    calculatePrice(this.data.distancia || '5k', ''),
+  );
+
+  constructor() {
+    this.form.valueChanges.subscribe((val) => {
+      this.priceInfo.set(
+        calculatePrice(val.distancia || '5k', val.codigoDescuento),
+      );
+    });
+  }
+
   close(): void {
     this.dialogRef.close();
   }
@@ -447,7 +629,6 @@ export class RegistrationModalComponent {
     console.log('📝 Form submit triggered');
     if (this.form.invalid) {
       console.warn('❌ Form is invalid:', this.form.errors);
-      // Log individual field errors to see which one is failing
       Object.keys(this.form.controls).forEach(key => {
         const controlErrors = this.form.get(key)?.errors;
         if (controlErrors != null) {
@@ -461,8 +642,14 @@ export class RegistrationModalComponent {
     this.submitting.set(true);
     this.errorMsg.set('');
 
-    console.log('🚀 Sending data to service:', this.form.getRawValue());
-    this.inscripcionService.crear(this.form.getRawValue()).subscribe({
+    const rawValue = this.form.getRawValue();
+    const dataToSend = {
+      ...rawValue,
+      codigoDescuento: rawValue.codigoDescuento ? rawValue.codigoDescuento.trim().toUpperCase() : '',
+    };
+
+    console.log('🚀 Sending data to service:', dataToSend);
+    this.inscripcionService.crear(dataToSend).subscribe({
       next: (res) => {
         console.log('✅ Registration success:', res);
         this.submitting.set(false);
